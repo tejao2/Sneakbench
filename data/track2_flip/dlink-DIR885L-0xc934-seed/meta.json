@@ -1,0 +1,19 @@
+{
+  "id": "dlink-DIR885L-0xc934-seed",
+  "synthetic": true,
+  "seeded": true,
+  "source_vendor": "dlink",
+  "source_rel": "dlink/DIR-885L_REVA_1.10B01/htdocs/cgibin",
+  "source_arch": "ARM (ELF 32-bit LSB, EABI5, stripped) [seed said MIPS; binary is actually ARM]",
+  "source_va": "0xc934",
+  "source_name": "getcfg_session_gate",
+  "mutation": "default-true-fallthrough on session-store validation: when session_store_validate (fcn.0000c7a4) returns a negative (absent/invalid session), coerce the result to 0 (a valid AUTHORIZED_GROUP level) instead of returning the negative deny value",
+  "mutation_name": "accept-invalid-session-as-group-0",
+  "flaw_line": "if (level < 0) level = 0;   // after level = session_store_validate(req_cb, req_buf, content_len);",
+  "why": "The gate return governs the getcfg pipeline: consumer fcn.0000d760 emits AUTHORIZED_GROUP=%d and forwards the request when the return is >= 0, and replies HTTP 400 'unsupported HTTP request' when it is < 0. The original fails closed (an invalid session yields a negative -> deny). The injected line makes an invalid/absent session yield 0 (>= 0), so an unauthenticated request is treated as authorized group 0 and the getcfg request is forwarded. This is a CWE-287 authentication bypass.",
+  "mechanism": "session",
+  "track": "B",
+  "blind_verdict": "vulnerable",
+  "patched_original_blind": "need-more-context",
+  "in_benchmark": true
+}

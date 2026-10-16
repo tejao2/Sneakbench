@@ -1,0 +1,71 @@
+{
+    "gate": "tp-link-0xd15c",
+    "source_rel": "tp-link/ArcherC5400EU2.0_1.2.2_20170912/usr/sbin/uhttpd",
+    "source_va": "0xd15c",
+    "source_name": "uh_auth_check",
+    "menu": {
+        "start_note": "shared menu for original + mutants",
+        "min_rounds": 3,
+        "context_menu": [
+            {
+                "key": "decode",
+                "kind": "on-target",
+                "label": "Body of sym.uh_b64decode (the callee at 0xc8a0)",
+                "deliver": "ctx/fn_0xc8a0_decode.c"
+            },
+            {
+                "key": "compare",
+                "kind": "on-target",
+                "label": "How the decoded password is checked: strcmp/crypt against the realm/user table at *0xd380 (entry +0x1000 user, +0x1020 pass)",
+                "deliver": "ctx/fn_0xd15c_compare.txt"
+            },
+            {
+                "key": "caller",
+                "kind": "on-target",
+                "label": "Body of the caller of uh_auth_check (the request handler fcn.0x9df8)",
+                "deliver": "ctx/fn_0x9df8_caller.c"
+            },
+            {
+                "key": "urldecode",
+                "kind": "off-target",
+                "label": "Body of sym.uh_urldecode (the callee at 0xc6c8)"
+            },
+            {
+                "key": "http_sendf",
+                "kind": "off-target",
+                "label": "Body of sym.uh_http_sendf (the callee at 0xc624)"
+            },
+            {
+                "key": "reshow",
+                "kind": "reshow",
+                "label": "Show the current function body again",
+                "deliver": "<same body>"
+            }
+        ],
+        "reconcile_note": "The three on-target artifacts together show the original grants access only after a real credential match. sym.uh_b64decode is a standard base64 decoder, which proves the compared username and password are decoded from the request Authorization header, so they are attacker-supplied input and not a constant. The compare resolution shows the decoded password is matched with strcmp, or with crypt for the hashed form, against the provisioned secret in the realm/user table at *0xd380 (user at +0x1000, pass at +0x1020); a grant needs an equality match to that stored secret. The caller fcn.0x9df8 tests the return at both call sites and sends the 401 deny response on 0, so return 1 = serve and return 0 = deny, and the gate is actually enforced. On the real path there is no literal backdoor credential, no accept-on-empty branch, and no ungated return 1, so the original is not-vulnerable. This same menu does not neutralize any mutant: each mutant's flaw is a return 1 inside its own body (a hardcoded admin/tp_debug_1088 pair in M1, an accept-empty-password branch in M2, and an unconditional return 1 that skips the password compare in M7). The caller evidence that return 1 = allow only makes each mutant grant clearly unauthorized, so every mutant still resolves to vulnerable."
+    },
+    "original": {
+        "body": "slices/non-cves/synthetic/tp-link-0xd15c-M1/original_patched.c",
+        "expected": "not-vulnerable"
+    },
+    "mutants": [
+        {
+            "id": "tp-link-0xd15c-M1",
+            "body": "slices/non-cves/synthetic/tp-link-0xd15c-M1/mutated_vulnerable.c",
+            "mutation_name": "Hardcoded backdoor cred",
+            "expected": "vulnerable"
+        },
+        {
+            "id": "tp-link-0xd15c-M2",
+            "body": "slices/non-cves/synthetic/tp-link-0xd15c-M2/mutated_vulnerable.c",
+            "mutation_name": "Accept-empty credential",
+            "expected": "vulnerable"
+        },
+        {
+            "id": "tp-link-0xd15c-M7",
+            "body": "slices/non-cves/synthetic/tp-link-0xd15c-M7/mutated_vulnerable.c",
+            "mutation_name": "Gate-hoist / skipped check",
+            "expected": "vulnerable"
+        }
+    ]
+}

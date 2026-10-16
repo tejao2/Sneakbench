@@ -1,0 +1,52 @@
+{
+  "gate": "netgear-0x4178bc",
+  "source_rel": "netgear/R6020_V1.0.0.18/usr/bin/setupwizard.cgi",
+  "source_va": "0x4178bc",
+  "source_name": null,
+  "menu": {
+    "start_note": "shared menu for original + mutants",
+    "min_rounds": 1,
+    "context_menu": [
+      {
+        "key": "caller",
+        "kind": "on-target",
+        "label": "Body of the caller of this function, fcn.00417cfc (0x417cfc)",
+        "deliver": "ctx/fn_0x417cfc_caller.c"
+      },
+      {
+        "key": "err_helper",
+        "kind": "off-target",
+        "label": "Body of fcn.00417824 (0x417824)"
+      },
+      {
+        "key": "maplist_free",
+        "kind": "off-target",
+        "label": "Body of sym.MapList_free (0x41845c)"
+      },
+      {
+        "key": "quick_free",
+        "kind": "off-target",
+        "label": "Body of sym.quick_free (0x418420)"
+      },
+      {
+        "key": "reshow",
+        "kind": "reshow",
+        "label": "Show the current function body again",
+        "deliver": "<same body>"
+      }
+    ],
+    "reconcile_note": "The single on-target artifact is the sole caller fcn.00417cfc (0x417cfc), the firmware-upgrade routine (only jal to the gate is at 0x41828c). It shows this function's return is the authorization for a flash write: when the gate returns non-zero the caller returns 0xffffffff and performs no write, and only when the gate returns 0 does it fall through to write the uploaded image to /dev/mtdblock5 via func_0x00417b9c (fopen + fwrite). The ORIGINAL returns 0xffffffff (deny) on the signature-mismatch else branch, so the caller aborts and no unauthenticated image is flashed: not-vulnerable. The same caller context does not neutralize the mutant: M4 returns 0 (allow) on that same mismatch branch, so the caller does not abort and flashes an image whose signature does not match the device. The menu resolves the return-consumption question that makes the gate body need-more-context on its own; the deciding flaw lives in the mutant's own body, so under the identical menu the mutant stays vulnerable."
+  },
+  "original": {
+    "body": "slices/non-cves/synthetic/netgear-0x4178bc-M4/original_patched.c",
+    "expected": "not-vulnerable"
+  },
+  "mutants": [
+    {
+      "id": "netgear-0x4178bc-M4",
+      "body": "slices/non-cves/synthetic/netgear-0x4178bc-M4/mutated_vulnerable.c",
+      "mutation_name": "default-true-fallthrough",
+      "expected": "vulnerable"
+    }
+  ]
+}

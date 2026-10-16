@@ -1,0 +1,59 @@
+{
+    "gate": "dlink-0x411a10",
+    "source_rel": "dlink/DIR-816L_REVB_2.05B02/htdocs/cgibin",
+    "source_va": "0x411a10",
+    "source_name": null,
+    "menu": {
+        "start_note": "shared menu for original + mutants",
+        "min_rounds": 3,
+        "context_menu": [
+            {
+                "key": "b64decode_body",
+                "kind": "on-target",
+                "label": "Body of sym.base64decode (0x41aa2c)",
+                "deliver": "ctx/fn_base64decode_decode.c"
+            },
+            {
+                "key": "call_pointer_resolution",
+                "kind": "on-target",
+                "label": "Resolution of the indirect call pointers used by this function (which import/callee each (**0x...) points to)",
+                "deliver": "ctx/fn_0x411a10_compare.txt"
+            },
+            {
+                "key": "hnapasswd_file",
+                "kind": "on-target",
+                "label": "Contents and role of the file opened here, /var/etc/hnapasswd (fopen mode \"r\")",
+                "deliver": "ctx/hnapasswd_config.md"
+            },
+            {
+                "key": "b64encode_body",
+                "kind": "off-target",
+                "label": "Body of sym.base64encode (0x41aba8)"
+            },
+            {
+                "key": "caller_hnap_main",
+                "kind": "off-target",
+                "label": "Body of the caller of this function, sym.hnap_main (0x4124a0)"
+            },
+            {
+                "key": "reshow_body",
+                "kind": "reshow",
+                "label": "Show the current function body again",
+                "deliver": "<same body>"
+            }
+        ],
+        "reconcile_note": "The three delivered artifacts show the gate compares a request-supplied credential against an admin-provisioned store and grants only on an exact match. sym.base64decode decodes the HTTP Basic header, so the supplied username and password are request input, not code constants. The pointer resolution shows the indirect calls are strncasecmp(\"basic\"), fopen(\"/var/etc/hnapasswd\",\"r\"), strchr(':'), strcasecmp on the username per file line, and strcmp of the supplied password against the stored password; the gate returns grant (0) only on a line that matches both, and returns deny (0xffffffff) on every other path (no file, EOF with no match, decode failure, no ':' in the credential). The hnapasswd config confirms the compared secret lives in the admin-provisioned file, never as a literal in the code. So the original is a normal, sound HTTP Basic gate: not-vulnerable. This same menu does not neutralize the mutant, because the mutant adds an in-body branch that grants on the literal password \"h4rDc0d3d\" before the file loop runs, and no delivered artifact removes that hardcoded backdoor from the mutant body."
+    },
+    "original": {
+        "body": "slices/non-cves/synthetic/dlink-0x411a10-M1/original_patched.c",
+        "expected": "not-vulnerable"
+    },
+    "mutants": [
+        {
+            "id": "dlink-0x411a10-M1",
+            "body": "slices/non-cves/synthetic/dlink-0x411a10-M1/mutated_vulnerable.c",
+            "mutation_name": "hardcoded-backdoor-cred",
+            "expected": "vulnerable"
+        }
+    ]
+}

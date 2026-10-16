@@ -1,0 +1,18 @@
+{
+  "id": "tenda-AC10v1-0x434c80-seed",
+  "synthetic": true,
+  "seeded": true,
+  "source_vendor": "tenda",
+  "source_rel": "tenda/AC10v1_V15.03.06.46/bin/httpd",
+  "source_va": "0x434c80",
+  "source_name": "R7WebsSecurityHandler",
+  "mechanism": "session",
+  "mutation": "One extra whitelist branch is injected into the pass-through section so the entire admin form-handler tree '/goform/' is treated as public. A protected /goform/* config action now hits the early pass-through return BEFORE the login-session check, so state-changing admin actions are served to an unauthenticated request.",
+  "mutation_name": "skip-check",
+  "flaw_line": "if (strncmp(url, \"/goform/\", 8) == 0) return 0;  /* injected pass-through for the whole admin form tree */",
+  "why": "R7WebsSecurityHandler is the goahead security handler registered first in initWebs @0x434504; it whitelists public URLs (early return = served with no auth) and, for protected paths, serves only if the request's session id is a stored authenticated session in loginUserInfo[], otherwise redirects to login. Whitelisting the '/goform/' tree short-circuits the session check for admin config actions -> CWE-306 unauth access to protected functions.",
+  "track": "B",
+  "blind_verdict": "vulnerable",
+  "patched_original_blind": "need-more-context",
+  "in_benchmark": true
+}

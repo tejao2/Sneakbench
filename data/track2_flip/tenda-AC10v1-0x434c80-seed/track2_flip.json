@@ -1,0 +1,65 @@
+{
+  "gate": "tenda-AC10v1-0x434c80-seed",
+  "source_rel": "tenda/AC10v1_V15.03.06.46/bin/httpd",
+  "source_va": "0x434c80",
+  "source_name": "R7WebsSecurityHandler",
+  "menu": {
+    "start_note": "shared menu for original + mutants",
+    "min_rounds": 3,
+    "context_menu": [
+      {
+        "key": "registration",
+        "kind": "on-target",
+        "label": "Body of sym.initWebs (0x434220), where R7WebsSecurityHandler is passed to websUrlHandlerDefine",
+        "deliver": "ctx/fn_0x434220_initwebs_registration.c"
+      },
+      {
+        "key": "serve_block_delegates",
+        "kind": "on-target",
+        "label": "Bodies of sym.websRedirectOpCookie (0x432d84) and sym.websRedirect (0x430784), the two response calls this handler ends on",
+        "deliver": "ctx/fn_0x432d84_serve_and_block_delegates.c"
+      },
+      {
+        "key": "session_store",
+        "kind": "on-target",
+        "label": "Definition and writers/readers of obj.loginUserInfo (0x54fb2c), the object this handler strcmp's wp->sess_id against",
+        "deliver": "ctx/session_store_loginUserInfo.md"
+      },
+      {
+        "key": "bait_form_handler",
+        "kind": "off-target",
+        "label": "Body of sym.websFormHandler (0x4163b0), the /goform handler registered after this one"
+      },
+      {
+        "key": "bait_cgi_handler",
+        "kind": "off-target",
+        "label": "Body of sym.webs_Tenda_CGI_BIN_Handler (0x4435a0), the /cgi-bin handler registered after this one"
+      },
+      {
+        "key": "bait_quick_setting",
+        "kind": "off-target",
+        "label": "Body of sym.need_enter_quick_setting_web (0x434b4c), called on this handler's serve path"
+      },
+      {
+        "key": "reshow",
+        "kind": "reshow",
+        "label": "Show the current function body again",
+        "deliver": "<same body>"
+      }
+    ],
+    "reconcile_note": "R7WebsSecurityHandler returns 0 on both its serve and its block paths, so the body alone is need-more-context. Three artifacts resolve the ORIGINAL and each is independently necessary. (1) sym.initWebs registers R7WebsSecurityHandler on \"/\" FIRST (flag 1), ahead of websFormHandler (\"/goform\"), webs_Tenda_CGI_BIN_Handler (\"/cgi-bin\") and websDefaultHandler (flag 2, last), so goahead runs this security check on every request, including every /goform/* config action, before any content handler; the original whitelist admits only specific pre-login endpoints, so a protected /goform/* action reaches the session check. (2) The two response delegates fix polarity: websRedirect builds a 302 to the login page = BLOCK, websRedirectOpCookie builds a 302 that plants the session cookie and serves the requested page = PASS, and a plain early return 0 with neither call = fall-through to the next handler (public asset). (3) obj.loginUserInfo is the authenticated-session table: a record is installed (memcpy wp->sess_id 0x20 + get_uptime timestamp) only on R7's credential-success path (0x435cd8, 0x4363f8) after the /login/Auth compare against g_User/g_Pass, and it is only read (strcmp of the presented session id) by R7 and by other protected features (fast_setting.c, system_password.c); nothing else installs a session. Together they show the ORIGINAL is a real deny-by-default gate: unmatched /goform/* actions from an outsider fail the loginUserInfo lookup and are redirected to login, so the original is not-vulnerable. This same menu does not neutralize the mutant flaw, because the flaw is in the mutant's own body: the mutant injects `if (strncmp(url, \"/goform/\", 8) == 0) return 0;` into the pass-through section, so the whole admin form tree short-circuits to the early public return BEFORE the loginUserInfo session check ever runs. The registration evidence makes this worse, not safe, because it confirms every /goform/* action passes through this handler, so whitelisting the whole tree serves state-changing admin actions to an unauthenticated caller (CWE-306). The mutant therefore stays vulnerable under the identical context.",
+    "bait_note": "The three baits are real same-binary functions off the verdict path: websFormHandler and webs_Tenda_CGI_BIN_Handler are the sibling content handlers registered right after this one (tempting as 'where the real gate might be', but they run only after the security handler has already passed the request), and need_enter_quick_setting_web is a real callee on the serve path that does not bear on the access decision."
+  },
+  "original": {
+    "body": "slices/non-cves/synthetic/tenda-AC10v1-0x434c80-seed/original_patched.c",
+    "expected": "not-vulnerable"
+  },
+  "mutants": [
+    {
+      "id": "tenda-AC10v1-0x434c80-seed",
+      "body": "slices/non-cves/synthetic/tenda-AC10v1-0x434c80-seed/mutated_vulnerable.c",
+      "mutation_name": "skip-check",
+      "expected": "vulnerable"
+    }
+  ]
+}

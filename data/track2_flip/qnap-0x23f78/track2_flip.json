@@ -1,0 +1,65 @@
+{
+  "gate": "qnap-0x23f78",
+  "source_rel": "qnap/TS-X31P_QTS_4.3.4/home/httpd/cgi-bin/filemanager/utilRequest.cgi",
+  "source_va": "0x23f78",
+  "source_name": "00023f78",
+  "menu": {
+    "start_note": "shared menu for original + mutants",
+    "min_rounds": 3,
+    "context_menu": [
+      {
+        "key": "callee_group_membership",
+        "kind": "on-target",
+        "label": "Body of the callee User_Belongs_To_Group (external import, PLT thunk at 0xec54)",
+        "deliver": "ctx/fn_0xec54_group_check.c"
+      },
+      {
+        "key": "identity_source_0xac298",
+        "kind": "on-target",
+        "label": "Body of fcn.00046900, which writes the global at 0xac298",
+        "deliver": "ctx/fn_0x46900_identity_source.c"
+      },
+      {
+        "key": "caller_polarity_0x3df8c",
+        "kind": "on-target",
+        "label": "Body of the caller fcn.0003df8c",
+        "deliver": "ctx/fn_0x3df8c_consumer.c"
+      },
+      {
+        "key": "bait_become_id",
+        "kind": "off-target",
+        "label": "Body of the callee Become_ID(0xac298, ...) called in the sibling caller fcn.00023fb4"
+      },
+      {
+        "key": "bait_delete_policy",
+        "kind": "off-target",
+        "label": "Value of Get_Profile_Integer(\"WebFS\", \"Delete_Permanently_Admins_Only\") read in fcn.00023fb4"
+      },
+      {
+        "key": "reshow_start_body",
+        "kind": "reshow",
+        "label": "Show the current function body again",
+        "deliver": "<same body>"
+      }
+    ],
+    "reconcile_note": "The gate fcn.00023f78 takes void, reads the global 0xac298, calls the external User_Belongs_To_Group, and returns bare numbers 0 vs 0xfffffffc, so the body alone is need-more-context. Three artifacts resolve it and each is independently necessary. (1) fcn.00046900 shows 0xac298 is the already-authenticated session username, copied by strncpy from the loaded session record, not raw per-call request input, so the check runs on a trusted identity. (2) User_Belongs_To_Group (PLT thunk at 0xec54) is a real external membership authority whose answer the caller cannot forge, so a non-'admin' user is granted only on true membership and a non-member takes the 0xfffffffc branch. (3) The caller fcn.0003df8c pins the polarity: return 0 is allow (reaches the admin-only Set_Profile_Integer), nonzero is deny (emits status 4 and bails). Together they show the ORIGINAL delegates correctly: only a real administrator returns 0, non-members return the deny code, so the original is not-vulnerable. This same menu does not neutralize either mutant flaw, because the flaw is in the mutant's own body. M3 inverts the identity test (strcmp != 0 -> return 0), so every non-admin user is granted before the group check even runs. M4 sets the non-member branch to uVar2 = 0 (allow) and drops the deny code, so any authenticated user returns 0. The polarity artifact makes both flaws worse, not safe, because it confirms that returning 0 grants admin. So both mutants stay vulnerable under the identical context."
+  },
+  "original": {
+    "body": "slices/non-cves/synthetic/qnap-0x23f78-M4/original_patched.c",
+    "expected": "not-vulnerable"
+  },
+  "mutants": [
+    {
+      "id": "qnap-0x23f78-M4",
+      "body": "slices/non-cves/synthetic/qnap-0x23f78-M4/mutated_vulnerable.c",
+      "mutation_name": "Default-true fall-through",
+      "expected": "vulnerable"
+    },
+    {
+      "id": "qnap-0x23f78-M3",
+      "body": "slices/non-cves/synthetic/qnap-0x23f78-M3/mutated_vulnerable.c",
+      "mutation_name": "Inverted comparison",
+      "expected": "vulnerable"
+    }
+  ]
+}

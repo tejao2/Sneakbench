@@ -1,0 +1,18 @@
+{
+  "id": "dlink-DIR869-0x40befc-seed",
+  "synthetic": true,
+  "seeded": true,
+  "source_vendor": "dlink",
+  "source_rel": "dlink/DIR-869_REVA_1.02B15/htdocs/cgibin",
+  "source_va": "0x40befc",
+  "source_name": "sess_ispoweruser",
+  "mutation": "The real gate is signed-guarded: sess_validate() >= 0 ? (sess_validate() < 100) : 0, so the -1 sentinel (unauth/invalid/expired session) denies. A single line is injected that forces only the sentinel/negative branch to return power-user = true. Legitimate inputs are unchanged: levels 0..99 still return true (power-user) and levels >= 100 still return false. Exactly one input class flips, the unauthenticated session, which is now classified as a power user.",
+  "mutation_name": "default-true-fallthrough (unauth->poweruser)",
+  "flaw_line": "if ((int32_t)uVar1 < 0) return true;   /* unauth/invalid session (sess_validate()==-1) granted power-user; original denies */",
+  "why": "sess_ispoweruser is the role gate on power-user-only config operations in pigwidgeoncgi_main, servicecgi_main and dlsyslog_main. The correct gate grants power-user only to a valid session with level 0..99 and denies the -1 sentinel returned for an absent/expired session. The injected fallthrough grants power-user to exactly the unauthenticated/expired-session caller while leaving every legitimate decision intact, so a single clean change escalates an unauthenticated party to power-user. Caller polarity: pigwidgeoncgi_main @0x40f24c beqz v0 -> deny (strcpy no power); non-zero -> privileged power-user branch.",
+  "mechanism": "role",
+  "track": "B",
+  "blind_verdict": "vulnerable",
+  "patched_original_blind": "need-more-context",
+  "in_benchmark": true
+}

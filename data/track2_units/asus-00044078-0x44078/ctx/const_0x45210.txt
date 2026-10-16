@@ -1,0 +1,11 @@
+// const source for the only raw command sink in fcn.00044078
+// In-body call (guarded by bVar1 and nvram_get_int("nmp_db_delete")==0):
+//     rsym.doSystem(*0x45210)
+
+[0x45210] -> 0x00068bef (rodata)
+psz @ 0x00068bef:
+    ip -s -s neigh flush all
+
+doSystem(fmt,...) internally does vsnprintf+system; here it is called with the
+single literal above and no variadic arguments (no %s), so the executed line is
+exactly "ip -s -s neigh flush all".

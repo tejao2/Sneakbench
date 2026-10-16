@@ -1,0 +1,65 @@
+{
+  "gate": "tp-link-0x4452f0",
+  "source_rel": "tp-link/TL-SG2210Pv5_5.0.0_20211201/usrImage/app/sbin/httpd",
+  "source_va": "0x4452f0",
+  "source_name": "sym.httpRpmPass",
+  "menu": {
+    "start_note": "shared menu for original + mutants",
+    "min_rounds": 2,
+    "context_menu": [
+      {
+        "key": "decode",
+        "kind": "on-target",
+        "label": "Body of sym.httpPwdDecode (0x4450c8)",
+        "deliver": "ctx/fn_0x4450c8_decode.c"
+      },
+      {
+        "key": "listfind",
+        "kind": "on-target",
+        "label": "Body of sym.httpGenListFind (0x43fb60)",
+        "deliver": "ctx/fn_0x43fb60_compare.c"
+      },
+      {
+        "key": "b64",
+        "kind": "off-target",
+        "label": "Body of sym.httpBase64decode (0x43e924)"
+      },
+      {
+        "key": "authget",
+        "kind": "off-target",
+        "label": "Body of sym.httpAuthorizationGet (0x43f24c)"
+      },
+      {
+        "key": "mempool",
+        "kind": "off-target",
+        "label": "Body of sym.memPoolAlloc (0x4560bc)"
+      },
+      {
+        "key": "reshow",
+        "kind": "reshow",
+        "label": "Show the current function body again",
+        "deliver": "<same body>"
+      }
+    ],
+    "reconcile_note": "The original body is need-more-context on its own: it decodes the Authorization header, then defers accept/deny to two callees. Delivering both on-target bodies resolves it. httpPwdDecode (0x4450c8) shows the credential is base64-decoded from the request and split at ':', so the accepted string comes from request input, not from any literal in the body. httpGenListFind (0x43fb60) shows that decoded credential is length-checked then strcmp-matched against the provisioned stored-user list, so acceptance is delegated to external configuration state. Together they prove the gate grants only on an exact match to an externally provisioned account, which is not-vulnerable. The same two bodies do not fix either mutant, because each mutant's flaw sits inside httpRpmPass's own body: M1 adds a branch that accepts the raw header 'Basic YWRtaW46dHBsMzM3' (base64 admin:tpl337) and returns success before the list walk ever runs, and M8 sprintf's the attacker-controlled decoded credential into a 256-byte stack buffer and hands it to a printf/exec-family sink. The callees resolve the original but cannot override an in-body bypass or sink, so each mutant stays vulnerable under this identical menu. The three off-target items are real same-binary callees off the accept/deny path (base64 primitive, header reader, buffer allocator) and add nothing to the verdict."
+  },
+  "original": {
+    "body": "slices/non-cves/synthetic/tp-link-0x4452f0-M1/original_patched.c",
+    "expected": "not-vulnerable"
+  },
+  "mutants": [
+    {
+      "id": "tp-link-0x4452f0-M1",
+      "body": "slices/non-cves/synthetic/tp-link-0x4452f0-M1/mutated_vulnerable.c",
+      "mutation_name": "hardcoded-backdoor-cred",
+      "expected": "not-vulnerable",
+      "relabel_v3_1": "2026-10-06: relabeled vulnerable -> not-vulnerable (gpu-setup + user decision). The backdoor branch matches 'Basic YWRtaW46dHBsMzM3' but only calls 0x496aec (realm header) and returns 0; it never sets REMOTE_USER (-0x71b4) and never calls the grant (-0x72ec), so the match does not open access. 0/24 solved. Flip group keeps its vulnerable pole via M8."
+    },
+    {
+      "id": "tp-link-0x4452f0-M8",
+      "body": "slices/non-cves/synthetic/tp-link-0x4452f0-M8/mutated_vulnerable.c",
+      "mutation_name": "inject-ungated-sink",
+      "expected": "vulnerable"
+    }
+  ]
+}

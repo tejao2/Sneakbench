@@ -1,0 +1,22 @@
+{
+ "id": "tenda-AC10v1-0x428174-seed",
+ "synthetic": true,
+ "seeded": true,
+ "source_vendor": "tenda",
+ "source_rel": "tenda/AC10v1_V15.03.06.46/bin/httpd",
+ "source_va": "0x4280d4",
+ "source_va_seed_interior": "0x428174",
+ "source_name": "umUserCanAccessURL",
+ "mechanism": "capability",
+ "mutation": "The terminal group-match authorization decision (um.c:1398) is changed so the group-MISMATCH branch returns 1 (allow) instead of 0 (deny). The predicate now grants URL access to any valid, enabled user in any enabled/privileged group, ignoring whether that group matches the group the URL's access-limit rule requires. A low-privilege group thus passes a high-privilege URL's access check.",
+ "mutation_name": "default-true-fallthrough",
+ "flaw_line": "return 1;  /* terminal deny-on-group-mismatch flipped from `return 0` */",
+ "why": "umUserCanAccessURL is the capability/RBAC authorization predicate: it reads the user's group privilege and the URL's required access-limit group from the user-management DB/config and returns 1=allow only when the user's group is authorized. Forcing the mismatch path to allow is a real CWE-285 authorization bypass / privilege escalation. Seed source_va 0x428174 is 0xa0 into the function; the true symbol start is 0x4280d4.",
+ "track": "B",
+ "blind_verdict": "vulnerable",
+ "patched_original_blind": "need-more-context",
+ "in_benchmark": true,
+ "reachability": "library-only / no live in-image consumer (exported GLOBAL authorization API; no direct caller, no GOT ptr to 0x4280d4)",
+ "consumer_note": "fold-fix M3 (2026-09-25): no fabricated caller. keep-with-flag confirmed by user 2026-09-25.",
+ "true_symbol_start": "0x4280d4"
+}

@@ -1,0 +1,65 @@
+{
+ "gate": "dlink-0x2f82c",
+ "source_rel": "dlink/DIR-895L_REVA_1.02B07/htdocs/fileaccess.cgi",
+ "source_va": "0x2f82c",
+ "source_name": "0002f82c",
+ "menu": {
+  "start_note": "shared menu for original + mutants",
+  "min_rounds": 2,
+  "context_menu": [
+   {
+    "key": "caller_token_reader",
+    "kind": "on-target",
+    "label": "Body of the caller fcn.0002fa10 (the token-file reader that invokes this compare)",
+    "deliver": "ctx/fn_0x0002fa10_caller.c"
+   },
+   {
+    "key": "const_token_file_magic",
+    "kind": "on-target",
+    "label": "The .rodata constant at 0x000301b8 that the strncmp at the top of this function matches",
+    "deliver": "str.f930481b_4bc1_4096_9324_c7ea832f1f84 @ .rodata 0x000301b8 = \"f930481b-4bc1-4096-9324-c7ea832f1f84\" (a 37-byte random UUID used as the token-file format magic; arg1 is the stored record read from the token file by the caller, not request input, so this strncmp is a format-tag precondition on the stored record, not a credential comparison)"
+   },
+   {
+    "key": "callee_path_builder",
+    "kind": "off-target",
+    "label": "Body of the callee fcn.0002ec2c (builds the token-file path from arg1)"
+   },
+   {
+    "key": "callee_entry_reader",
+    "kind": "off-target",
+    "label": "Body of the callee fcn.0002f648 (reads the entry list into the malloc'd buffer)"
+   },
+   {
+    "key": "reshow_start_body",
+    "kind": "reshow",
+    "label": "Show the current function body again",
+    "deliver": "<same body>"
+   }
+  ],
+  "reconcile_note": "The start body fcn.0002f82c is a token compare. Blind it is need-more-context because the origin of arg1 and the meaning of the strncmp string are unknown. Delivering the caller fcn.0002fa10 shows arg1 is the 0x44-byte record read from the server-side token file (open64 then read of 0x44 bytes) and in_r2 is the request-supplied token handed down; the caller accepts the request only when this compare returns non-zero. Delivering the .rodata constant shows the strncmp string is a random UUID token-file magic, so the strncmp is a format check on the stored record, not a hidden credential. Together they show the grant path is: the stored record carries the valid magic AND its mtime field matches (iStack_20 == *(arg1+0x38)) AND the request-supplied 16-byte token exactly equals the stored token (memcmp == 0). That is a correct request-token vs stored-token check, so the ORIGINAL resolves to not-vulnerable. Dropping the caller leaves arg1's role unknown (it could be attacker input); dropping the constant leaves the strncmp readable as a possible backdoor-string check; both are needed, so min_rounds = 2. This same menu is reused by the mutants and does not neutralize their flaws, because each flaw is inside the compare's own body: M2 grants when the supplied token is empty (*in_r2 == '\\0'), bypassing the memcmp; M3 inverts the memcmp test (iVar1 != 0), so any wrong token is accepted; M4 returns 1 on the strncmp-mismatch else branch, so any record without the magic is accepted. Knowing arg1's provenance and the magic string does not repair any of these, so each mutant still resolves to vulnerable. The path builder fcn.0002ec2c and the entry reader fcn.0002f648 are real same-binary callees off the verdict path; picking one ends the unit."
+ },
+ "original": {
+  "body": "slices/non-cves/synthetic/dlink-0x2f82c-M2/original_patched.c",
+  "expected": "not-vulnerable"
+ },
+ "mutants": [
+  {
+   "id": "dlink-0x2f82c-M2",
+   "body": "slices/non-cves/synthetic/dlink-0x2f82c-M2/mutated_vulnerable.c",
+   "mutation_name": "Accept-empty credential",
+   "expected": "vulnerable"
+  },
+  {
+   "id": "dlink-0x2f82c-M3",
+   "body": "slices/non-cves/synthetic/dlink-0x2f82c-M3/mutated_vulnerable.c",
+   "mutation_name": "Inverted comparison",
+   "expected": "vulnerable"
+  },
+  {
+   "id": "dlink-0x2f82c-M4",
+   "body": "slices/non-cves/synthetic/dlink-0x2f82c-M4/mutated_vulnerable.c",
+   "mutation_name": "Default-true fall-through",
+   "expected": "vulnerable"
+  }
+ ]
+}

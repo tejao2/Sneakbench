@@ -1,0 +1,58 @@
+{
+  "gate": "dlink-DIR869-0x40bd78-seed",
+  "source_rel": "dlink/DIR-869_REVA_1.02B15/htdocs/cgibin",
+  "source_va": "0x40bd78",
+  "source_name": "sess_validate",
+  "menu": {
+    "start_note": "shared menu for original + mutants",
+    "min_rounds": 2,
+    "context_menu": [
+      {
+        "key": "session_store_lookup",
+        "kind": "on-target",
+        "label": "Body of callee sym.find_sentry (0x40b0b8), called as sym.find_sentry(auStack_184, iVar2) just before the grant/deny branch",
+        "deliver": "ctx/fn_0x40b0b8_session-store.c"
+      },
+      {
+        "key": "uid_from_cookie",
+        "kind": "off-target",
+        "label": "Body of callee sym.sess_get_uid (0x409c40), called as iVar2 = sym.sess_get_uid(size) to derive the uid guarded by the -1 < iVar2 test"
+      },
+      {
+        "key": "return_consumer",
+        "kind": "on-target",
+        "label": "Body of sym.sess_ispoweruser (0x40bf08), a caller-side consumer that runs sess_validate() and returns level < 100",
+        "deliver": "ctx/fn_0x40bf08_ispoweruser.c"
+      },
+      {
+        "key": "sentry_slot_accessor",
+        "kind": "off-target",
+        "label": "Body of callee sym.rw_sentry (0x40a3b0), the /var/session/<idx> slot read and write accessor used inside find_sentry"
+      },
+      {
+        "key": "entry_sweep",
+        "kind": "off-target",
+        "label": "Body of callee fcn.0040ad24 (0x40ad24), the per-slot expiry sweep run at the top of this function via fcn.0040ad24(arg1, n)"
+      },
+      {
+        "key": "reshow_start_body",
+        "kind": "reshow",
+        "label": "Show the current function body again",
+        "deliver": "<same body>"
+      }
+    ],
+    "reconcile_note": "sess_validate blind is need-more-context. Every deny path returns 0xffffffff, but the single grant path returns a privilege level read from an external session store through find_sentry, and blind we cannot see whether that store lookup is real, nor whether the -1 sentinel actually denies downstream. The two on-target items close both gaps. find_sentry (0x40b0b8) shows the grant is gated on a live match: it walks the sentry table via rw_sentry, compares the request session id (arg2) against each stored entry, and returns 0 when no live entry matches, so an absent or expired session never reaches the grant branch and the function returns 0xffffffff. sess_ispoweruser (0x40bf08) shows what the return value means: it computes sess_validate() < 100 as an unsigned test, so a real level 0..99 authorizes and 0xffffffff (4294967295 unsigned) is not < 100 and is denied. Together they prove the original fails closed: no session-id match gives -1, and -1 denies. So the ORIGINAL resolves to not-vulnerable. This same menu is reused by the mutant and does not repair it, because the flaw is inside sess_validate's own body: the mutant sets uVar3 = 0 (a valid level) on the deny branch that fires for a store miss, a malformed entry, or an expired entry, instead of 0xffffffff. find_sentry still returns 0 for those cases, but that now maps to level 0, and sess_ispoweruser reads 0 < 100 as true, i.e. power user, so an absent or expired session is granted the top level. Knowing the store lookup is real and knowing the return-value polarity does not undo the in-body grant, so the mutant still resolves to vulnerable. The three baits are real same-binary callees off this verdict path: sess_get_uid (0x409c40) derives the uid from the request cookie and returns a negative value when there is no valid session cookie, rw_sentry (0x40a3b0) is the /var/session slot read and write accessor, and fcn.0040ad24 (0x40ad24) is the expired-entry sweep run at entry. None is needed once find_sentry and the consumer polarity are known, so picking one ends the unit."
+  },
+  "original": {
+    "body": "slices/non-cves/synthetic/dlink-DIR869-0x40bd78-seed/original_patched.c",
+    "expected": "not-vulnerable"
+  },
+  "mutants": [
+    {
+      "id": "dlink-DIR869-0x40bd78-seed",
+      "body": "slices/non-cves/synthetic/dlink-DIR869-0x40bd78-seed/mutated_vulnerable.c",
+      "mutation_name": "default-true-fallthrough",
+      "expected": "vulnerable"
+    }
+  ]
+}

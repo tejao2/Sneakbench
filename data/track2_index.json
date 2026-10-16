@@ -1,0 +1,850 @@
+{
+ "note": "Track-2 full scored set. core=resolution units; flip=synthetic pairs (original+mutant share one menu). Scorer carry-forward: R6020-20690 multi-pole (credit first correct pole); R7500-18749 CSRF whole-binary.",
+ "core": {
+  "count": 45,
+  "by_terminal": {
+   "vulnerable": 28,
+   "not-vulnerable": 17
+  },
+  "by_category": {
+   "cve": 30,
+   "big-context": 3,
+   "injsupp": 7,
+   "hardneg": 7
+  },
+  "units": [
+   {
+    "unit": "AC10v1_V15.03.06.46-telnet-CWE306",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x0045b860",
+    "min_rounds": 2,
+    "block": "slices/_track2/AC10v1_V15.03.06.46-telnet-CWE306/track2_block.json"
+   },
+   {
+    "unit": "CVE-2013-4772__DIR-505L_REVA_1.01",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x00416b6c",
+    "min_rounds": 1,
+    "block": "slices/_track2/CVE-2013-4772__DIR-505L_REVA_1.01/track2_block.json"
+   },
+   {
+    "unit": "CVE-2014-7857__DNR-326_REVA_1.40B03",
+    "category": "cve",
+    "terminal": "not-vulnerable",
+    "start_slice": "0x0000a2e0",
+    "min_rounds": 2,
+    "block": "slices/_track2/CVE-2014-7857__DNR-326_REVA_1.40B03/track2_block.json"
+   },
+   {
+    "unit": "CVE-2014-7857__DNS-320L_REVA_1.03B08",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x0000a680",
+    "min_rounds": 2,
+    "block": "slices/_track2/CVE-2014-7857__DNS-320L_REVA_1.03B08/track2_block.json"
+   },
+   {
+    "unit": "CVE-2014-7857__DNS-327L_REVA_1.03B03",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x0001261c",
+    "min_rounds": 1,
+    "block": "slices/_track2/CVE-2014-7857__DNS-327L_REVA_1.03B03/track2_block.json"
+   },
+   {
+    "unit": "CVE-2014-7858__DNR-326_REVA_1.40B03",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x00009bec",
+    "min_rounds": 3,
+    "block": "slices/_track2/CVE-2014-7858__DNR-326_REVA_1.40B03/track2_block.json"
+   },
+   {
+    "unit": "CVE-2015-5999__DIR-816L_REVB_2.05B02",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x0040d050",
+    "min_rounds": 2,
+    "block": "slices/_track2/CVE-2015-5999__DIR-816L_REVB_2.05B02/track2_block.json"
+   },
+   {
+    "unit": "CVE-2017-18749__WNDR4300_V1.0.2.80",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x0043ab88",
+    "min_rounds": 2,
+    "block": "slices/_track2/CVE-2017-18749__WNDR4300_V1.0.2.80/track2_block.json"
+   },
+   {
+    "unit": "CVE-2017-18776__R7500v2_V1.0.3.4",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x0000e8ac",
+    "min_rounds": 3,
+    "block": "slices/_track2/CVE-2017-18776__R7500v2_V1.0.3.4/track2_block.json"
+   },
+   {
+    "unit": "CVE-2018-14847__RouterOS_6.40.4_CHR",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x08050f5e",
+    "min_rounds": 2,
+    "block": "slices/_track2/CVE-2018-14847__RouterOS_6.40.4_CHR/track2_block.json"
+   },
+   {
+    "unit": "CVE-2018-14847__RouterOS_6.42.12_CHR",
+    "category": "cve",
+    "terminal": "not-vulnerable",
+    "start_slice": "0x08051c2e",
+    "min_rounds": 1,
+    "block": "slices/_track2/CVE-2018-14847__RouterOS_6.42.12_CHR/track2_block.json"
+   },
+   {
+    "unit": "CVE-2018-20675__DIR-880L_REVA_1.07B08",
+    "category": "cve",
+    "terminal": "not-vulnerable",
+    "start_slice": "0xa31c",
+    "min_rounds": 4,
+    "block": "slices/_track2/CVE-2018-20675__DIR-880L_REVA_1.07B08/track2_block.json"
+   },
+   {
+    "unit": "CVE-2019-20690__R6020_V1.0.0.18",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x406690",
+    "min_rounds": 3,
+    "block": "slices/_track2/CVE-2019-20690__R6020_V1.0.0.18/track2_block.json"
+   },
+   {
+    "unit": "CVE-2019-3978__RouterOS_6.40.9_CHR",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x080579b2",
+    "min_rounds": 2,
+    "block": "slices/_track2/CVE-2019-3978__RouterOS_6.40.9_CHR/track2_block.json"
+   },
+   {
+    "unit": "CVE-2020-27865__DAP-1860_REVA_1.04B03",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x00017f04",
+    "min_rounds": 1,
+    "block": "slices/_track2/CVE-2020-27865__DAP-1860_REVA_1.04B03/track2_block.json"
+   },
+   {
+    "unit": "CVE-2020-27873__R7450_V1.2.0.62",
+    "category": "big-context",
+    "terminal": "vulnerable",
+    "start_slice": "0x0040a368",
+    "min_rounds": 2,
+    "block": "slices/_track2/CVE-2020-27873__R7450_V1.2.0.62/track2_block.json",
+    "run_excluded": true,
+    "run_excluded_reason": "big-context (oversized); kept as CVE-confirmed benchmark entry, not scored in this Track-2 run"
+   },
+   {
+    "unit": "CVE-2021-32030__GT-AC2900_3.0.0.4_384_69692",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x00069d3c",
+    "min_rounds": 3,
+    "block": "slices/_track2/CVE-2021-32030__GT-AC2900_3.0.0.4_384_69692/track2_block.json"
+   },
+   {
+    "unit": "CVE-2021-34865__R7450_V1.2.0.62",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x0040a5d4",
+    "min_rounds": 2,
+    "block": "slices/_track2/CVE-2021-34865__R7450_V1.2.0.62/track2_block.json"
+   },
+   {
+    "unit": "CVE-2021-34870__XR1000_V1.0.0.52",
+    "category": "big-context",
+    "terminal": "vulnerable",
+    "start_slice": "0x0004aed4",
+    "min_rounds": 2,
+    "block": "slices/_track2/CVE-2021-34870__XR1000_V1.0.0.52/track2_block.json",
+    "run_excluded": true,
+    "run_excluded_reason": "big-context (oversized); kept as CVE-confirmed benchmark entry, not scored in this Track-2 run"
+   },
+   {
+    "unit": "CVE-2022-27623__DSM_6.2.4-25556_DS115",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x0002cc98",
+    "min_rounds": 4,
+    "block": "slices/_track2/CVE-2022-27623__DSM_6.2.4-25556_DS115/track2_block.json"
+   },
+   {
+    "unit": "CVE-2022-27645__R6700v3_V1.0.4.120",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x0000c604",
+    "min_rounds": 2,
+    "block": "slices/_track2/CVE-2022-27645__R6700v3_V1.0.4.120/track2_block.json"
+   },
+   {
+    "unit": "CVE-2022-46076__DIR-869_REVA_1.02B15",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x00405ef8",
+    "min_rounds": 2,
+    "block": "slices/_track2/CVE-2022-46076__DIR-869_REVA_1.02B15/track2_block.json"
+   },
+   {
+    "unit": "CVE-2023-1327__RAX30_V1.0.3.64",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x00011b70",
+    "min_rounds": 2,
+    "block": "slices/_track2/CVE-2023-1327__RAX30_V1.0.3.64/track2_block.json"
+   },
+   {
+    "unit": "CVE-2023-30063__DIR-890L_REVA_1.06B04",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x0000d860",
+    "min_rounds": 4,
+    "block": "slices/_track2/CVE-2023-30063__DIR-890L_REVA_1.06B04/track2_block.json"
+   },
+   {
+    "unit": "CVE-2023-36089__DIR-645_REVA_1.03",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x00405884",
+    "min_rounds": 2,
+    "block": "slices/_track2/CVE-2023-36089__DIR-645_REVA_1.03/track2_block.json"
+   },
+   {
+    "unit": "CVE-2023-36090__DIR-885L_REVA_1.10B01",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0xd760",
+    "min_rounds": 2,
+    "block": "slices/_track2/CVE-2023-36090__DIR-885L_REVA_1.10B01/track2_block.json"
+   },
+   {
+    "unit": "CVE-2023-36092__DIR-859_REVA_1.05B03",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x00405dc8",
+    "min_rounds": 2,
+    "block": "slices/_track2/CVE-2023-36092__DIR-859_REVA_1.05B03/track2_block.json"
+   },
+   {
+    "unit": "CVE-2023-43318__TL-SG2210Pv5_5.0.0_20211201",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x004494c0",
+    "min_rounds": 2,
+    "block": "slices/_track2/CVE-2023-43318__TL-SG2210Pv5_5.0.0_20211201/track2_block.json"
+   },
+   {
+    "unit": "CVE-2025-14300__Tapo_C200v3_1.4.2_250313",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x53d3e0",
+    "min_rounds": 3,
+    "block": "slices/_track2/CVE-2025-14300__Tapo_C200v3_1.4.2_250313/track2_block.json"
+   },
+   {
+    "unit": "CVE-2025-59367__DSL-AC51_1.1.2.3_858",
+    "category": "cve",
+    "terminal": "vulnerable",
+    "start_slice": "0x004256f4",
+    "min_rounds": 2,
+    "block": "slices/_track2/CVE-2025-59367__DSL-AC51_1.1.2.3_858/track2_block.json"
+   },
+   {
+    "unit": "CVE-2026-0653__Tapo_C260v1_1.1.5_251126",
+    "category": "big-context",
+    "terminal": "vulnerable",
+    "start_slice": "0x0022ec8c",
+    "min_rounds": 3,
+    "block": "slices/_track2/CVE-2026-0653__Tapo_C260v1_1.1.5_251126/track2_block.json",
+    "run_excluded": true,
+    "run_excluded_reason": "big-context (oversized); kept as CVE-confirmed benchmark entry, not scored in this Track-2 run"
+   },
+   {
+    "unit": "INJ-DNR-322L_REVA_2.60B13-00b93c__DNR-322L_REVA_2.60B13",
+    "category": "injsupp",
+    "terminal": "not-vulnerable",
+    "start_slice": "0x0000b93c",
+    "min_rounds": 2,
+    "block": "slices/_track2/INJ-DNR-322L_REVA_2.60B13-00b93c__DNR-322L_REVA_2.60B13/track2_block.json"
+   },
+   {
+    "unit": "INJ-DNR-322L_REVA_2.60B13-00be08__DNR-322L_REVA_2.60B13",
+    "category": "injsupp",
+    "terminal": "not-vulnerable",
+    "start_slice": "0x0000be08",
+    "min_rounds": 2,
+    "block": "slices/_track2/INJ-DNR-322L_REVA_2.60B13-00be08__DNR-322L_REVA_2.60B13/track2_block.json"
+   },
+   {
+    "unit": "INJ-DNR-322L_REVA_2.60B13-00c194__DNR-322L_REVA_2.60B13",
+    "category": "injsupp",
+    "terminal": "not-vulnerable",
+    "start_slice": "0x0000c194",
+    "min_rounds": 2,
+    "block": "slices/_track2/INJ-DNR-322L_REVA_2.60B13-00c194__DNR-322L_REVA_2.60B13/track2_block.json"
+   },
+   {
+    "unit": "INJ-DNR-322L_REVA_2.60B13-00f104__DNR-322L_REVA_2.60B13",
+    "category": "injsupp",
+    "terminal": "not-vulnerable",
+    "start_slice": "0x0000f104",
+    "min_rounds": 2,
+    "block": "slices/_track2/INJ-DNR-322L_REVA_2.60B13-00f104__DNR-322L_REVA_2.60B13/track2_block.json"
+   },
+   {
+    "unit": "INJ-DNR-322L_REVA_2.60B13-013030__DNR-322L_REVA_2.60B13",
+    "category": "injsupp",
+    "terminal": "not-vulnerable",
+    "start_slice": "0x00013030",
+    "min_rounds": 2,
+    "block": "slices/_track2/INJ-DNR-322L_REVA_2.60B13-013030__DNR-322L_REVA_2.60B13/track2_block.json"
+   },
+   {
+    "unit": "INJ-DNR-322L_REVA_2.60B13-01378c__DNR-322L_REVA_2.60B13",
+    "category": "injsupp",
+    "terminal": "not-vulnerable",
+    "start_slice": "0x0001378c",
+    "min_rounds": 2,
+    "block": "slices/_track2/INJ-DNR-322L_REVA_2.60B13-01378c__DNR-322L_REVA_2.60B13/track2_block.json"
+   },
+   {
+    "unit": "INJ2-R6020_V1.0.0.18-save-414fe8__R6020_V1.0.0.18",
+    "category": "injsupp",
+    "terminal": "not-vulnerable",
+    "start_slice": "0x00414fe8",
+    "min_rounds": 2,
+    "block": "slices/_track2/INJ2-R6020_V1.0.0.18-save-414fe8__R6020_V1.0.0.18/track2_block.json"
+   },
+   {
+    "unit": "asus-00010290-0x10290",
+    "category": "hardneg",
+    "terminal": "not-vulnerable",
+    "start_slice": "0x10290",
+    "min_rounds": 2,
+    "block": "slices/_track2/asus-00010290-0x10290/track2_block.json"
+   },
+   {
+    "unit": "asus-00044078-0x44078",
+    "category": "hardneg",
+    "terminal": "not-vulnerable",
+    "start_slice": "0x44078",
+    "min_rounds": 3,
+    "block": "slices/_track2/asus-00044078-0x44078/track2_block.json"
+   },
+   {
+    "unit": "dlink-DIR868L-httpd-authcheck",
+    "category": "hardneg",
+    "terminal": "not-vulnerable",
+    "start_slice": "0x17d34",
+    "min_rounds": 2,
+    "block": "slices/_track2/dlink-DIR868L-httpd-authcheck/track2_block.json"
+   },
+   {
+    "unit": "dlink-cgi_group_modify-0x13030",
+    "category": "hardneg",
+    "terminal": "not-vulnerable",
+    "start_slice": "0x00013030",
+    "min_rounds": 2,
+    "block": "slices/_track2/dlink-cgi_group_modify-0x13030/track2_block.json"
+   },
+   {
+    "unit": "qnap-0000caa8-0xcaa8",
+    "category": "hardneg",
+    "terminal": "not-vulnerable",
+    "start_slice": "0xcaa8",
+    "min_rounds": 1,
+    "block": "slices/_track2/qnap-0000caa8-0xcaa8/track2_block.json",
+    "run_excluded": true,
+    "run_excluded_reason": "gpu-setup 2026-09-27 (user-assigned): terminal flipped to vulnerable on the access axis, but the pre-auth conclusion depends on the QNAP front-end (thttpd) config, inferred from binaries only (image has no /etc). A Track-2 unit must be decidable from its menu; that evidence cannot be delivered. Kept as a Track-1 entry (gt_track1 need-more-context, gt_terminal vulnerable)."
+   },
+   {
+    "unit": "qnap-0001f0dc-0x1f0dc",
+    "category": "hardneg",
+    "terminal": "not-vulnerable",
+    "start_slice": "0x1f0dc",
+    "min_rounds": 1,
+    "block": "slices/_track2/qnap-0001f0dc-0x1f0dc/track2_block.json"
+   },
+   {
+    "unit": "zyxel-000114b4-weblogin",
+    "category": "hardneg",
+    "terminal": "not-vulnerable",
+    "start_slice": "0x000114b4",
+    "min_rounds": 2,
+    "block": "slices/_track2/zyxel-000114b4-weblogin/track2_block.json"
+   }
+  ],
+  "scored_count": 42,
+  "scored_by_terminal": {
+   "vulnerable": 25,
+   "not-vulnerable": 17
+  },
+  "run_excluded_big_context": [
+   "CVE-2020-27873__R7450_V1.2.0.62",
+   "CVE-2021-34870__XR1000_V1.0.0.52",
+   "CVE-2026-0653__Tapo_C260v1_1.1.5_251126"
+  ]
+ },
+ "flip": {
+  "groups": 17,
+  "mutant_sides": 28,
+  "original_sides": 17,
+  "units": [
+   {
+    "unit": "dlink-0x16548",
+    "flip": "slices/_track2_synth/dlink-0x16548/track2_flip.json"
+   },
+   {
+    "unit": "dlink-0x2f82c",
+    "flip": "slices/_track2_synth/dlink-0x2f82c/track2_flip.json"
+   },
+   {
+    "unit": "dlink-0x411a10",
+    "flip": "slices/_track2_synth/dlink-0x411a10/track2_flip.json"
+   },
+   {
+    "unit": "dlink-0x417034",
+    "flip": "slices/_track2_synth/dlink-0x417034/track2_flip.json"
+   },
+   {
+    "unit": "dlink-0x4184d4",
+    "flip": "slices/_track2_synth/dlink-0x4184d4/track2_flip.json"
+   },
+   {
+    "unit": "dlink-DIR869-0x40bd78-seed",
+    "flip": "slices/_track2_synth/dlink-DIR869-0x40bd78-seed/track2_flip.json"
+   },
+   {
+    "unit": "dlink-DIR869-0x40befc-seed",
+    "flip": "slices/_track2_synth/dlink-DIR869-0x40befc-seed/track2_flip.json"
+   },
+   {
+    "unit": "dlink-DIR885L-0xc934-seed",
+    "flip": "slices/_track2_synth/dlink-DIR885L-0xc934-seed/track2_flip.json"
+   },
+   {
+    "unit": "netgear-0x4178bc",
+    "flip": "slices/_track2_synth/netgear-0x4178bc/track2_flip.json"
+   },
+   {
+    "unit": "qnap-0x23f78",
+    "flip": "slices/_track2_synth/qnap-0x23f78/track2_flip.json"
+   },
+   {
+    "unit": "tenda-AC10v1-0x428174-seed",
+    "flip": "slices/_track2_synth/tenda-AC10v1-0x428174-seed/track2_flip.json"
+   },
+   {
+    "unit": "tenda-AC10v1-0x434c80-seed",
+    "flip": "slices/_track2_synth/tenda-AC10v1-0x434c80-seed/track2_flip.json"
+   },
+   {
+    "unit": "tp-link-0x4452f0",
+    "flip": "slices/_track2_synth/tp-link-0x4452f0/track2_flip.json"
+   },
+   {
+    "unit": "tp-link-0x446d60",
+    "flip": "slices/_track2_synth/tp-link-0x446d60/track2_flip.json"
+   },
+   {
+    "unit": "tp-link-0xd15c",
+    "flip": "slices/_track2_synth/tp-link-0xd15c/track2_flip.json"
+   },
+   {
+    "unit": "zyxel-0x402ae8",
+    "flip": "slices/_track2_synth/zyxel-0x402ae8/track2_flip.json"
+   },
+   {
+    "unit": "zyxel-0x42c16c",
+    "flip": "slices/_track2_synth/zyxel-0x42c16c/track2_flip.json"
+   }
+  ],
+  "pairs": [
+   {
+    "unit": "dlink-0x16548",
+    "flip": "slices/_track2_synth/dlink-0x16548/track2_flip.json",
+    "gate": "dlink-0x16548",
+    "source_rel": "dlink/DIR-895L_REVA_1.02B07/htdocs/fileaccess.cgi",
+    "original": {
+     "body": "slices/_track2_synth/dlink-0x16548/original_patched.c",
+     "expected": "not-vulnerable"
+    },
+    "mutants": [
+     {
+      "id": "dlink-0x16548-M1",
+      "body": "slices/_track2_synth/dlink-0x16548/mutant_M1.c",
+      "mutation_name": "Hardcoded backdoor cred",
+      "expected": "vulnerable"
+     },
+     {
+      "id": "dlink-0x16548-M4",
+      "body": "slices/_track2_synth/dlink-0x16548/mutant_M4.c",
+      "mutation_name": "Default-true fall-through",
+      "expected": "vulnerable"
+     },
+     {
+      "id": "dlink-0x16548-M7",
+      "body": "slices/_track2_synth/dlink-0x16548/mutant_M7.c",
+      "mutation_name": "Gate-hoist / skipped check",
+      "expected": "vulnerable"
+     }
+    ]
+   },
+   {
+    "unit": "dlink-0x2f82c",
+    "flip": "slices/_track2_synth/dlink-0x2f82c/track2_flip.json",
+    "gate": "dlink-0x2f82c",
+    "source_rel": "dlink/DIR-895L_REVA_1.02B07/htdocs/fileaccess.cgi",
+    "original": {
+     "body": "slices/non-cves/synthetic/dlink-0x2f82c-M2/original_patched.c",
+     "expected": "not-vulnerable"
+    },
+    "mutants": [
+     {
+      "id": "dlink-0x2f82c-M2",
+      "body": "slices/non-cves/synthetic/dlink-0x2f82c-M2/mutated_vulnerable.c",
+      "mutation_name": "Accept-empty credential",
+      "expected": "vulnerable"
+     },
+     {
+      "id": "dlink-0x2f82c-M3",
+      "body": "slices/non-cves/synthetic/dlink-0x2f82c-M3/mutated_vulnerable.c",
+      "mutation_name": "Inverted comparison",
+      "expected": "vulnerable"
+     },
+     {
+      "id": "dlink-0x2f82c-M4",
+      "body": "slices/non-cves/synthetic/dlink-0x2f82c-M4/mutated_vulnerable.c",
+      "mutation_name": "Default-true fall-through",
+      "expected": "vulnerable"
+     }
+    ]
+   },
+   {
+    "unit": "dlink-0x411a10",
+    "flip": "slices/_track2_synth/dlink-0x411a10/track2_flip.json",
+    "gate": "dlink-0x411a10",
+    "source_rel": "dlink/DIR-816L_REVB_2.05B02/htdocs/cgibin",
+    "original": {
+     "body": "slices/non-cves/synthetic/dlink-0x411a10-M1/original_patched.c",
+     "expected": "not-vulnerable"
+    },
+    "mutants": [
+     {
+      "id": "dlink-0x411a10-M1",
+      "body": "slices/non-cves/synthetic/dlink-0x411a10-M1/mutated_vulnerable.c",
+      "mutation_name": "hardcoded-backdoor-cred",
+      "expected": "vulnerable"
+     }
+    ]
+   },
+   {
+    "unit": "dlink-0x417034",
+    "flip": "slices/_track2_synth/dlink-0x417034/track2_flip.json",
+    "gate": "dlink-0x417034",
+    "source_rel": "dlink/DIR-505L_REVA_1.01/usr/bin/lighttpd",
+    "original": {
+     "body": "slices/non-cves/synthetic/dlink-0x417034-M4/original_patched.c",
+     "expected": "not-vulnerable"
+    },
+    "mutants": [
+     {
+      "id": "dlink-0x417034-M8",
+      "body": "slices/non-cves/synthetic/dlink-0x417034-M8/mutated_vulnerable.c",
+      "mutation_name": "inject-ungated-sink",
+      "expected": "vulnerable"
+     },
+     {
+      "id": "dlink-0x417034-M4",
+      "body": "slices/non-cves/synthetic/dlink-0x417034-M4/mutated_vulnerable.c",
+      "mutation_name": "default-true-fallthrough",
+      "expected": "vulnerable"
+     }
+    ]
+   },
+   {
+    "unit": "dlink-0x4184d4",
+    "flip": "slices/_track2_synth/dlink-0x4184d4/track2_flip.json",
+    "gate": "dlink-0x4184d4",
+    "source_rel": "dlink/DCS-931L_REVA_1.03B8/bin/alphapd",
+    "original": {
+     "body": "slices/non-cves/synthetic/dlink-0x4184d4-M4/original_patched.c",
+     "expected": "not-vulnerable"
+    },
+    "mutants": [
+     {
+      "id": "dlink-0x4184d4-M4",
+      "body": "slices/non-cves/synthetic/dlink-0x4184d4-M4/mutated_vulnerable.c",
+      "mutation_name": "default-true-fallthrough",
+      "expected": "vulnerable"
+     },
+     {
+      "id": "dlink-0x4184d4-M1",
+      "body": "slices/non-cves/synthetic/dlink-0x4184d4-M1/mutated_vulnerable.c",
+      "mutation_name": "hardcoded-backdoor-cred",
+      "expected": "vulnerable"
+     }
+    ]
+   },
+   {
+    "unit": "dlink-DIR869-0x40bd78-seed",
+    "flip": "slices/_track2_synth/dlink-DIR869-0x40bd78-seed/track2_flip.json",
+    "gate": "dlink-DIR869-0x40bd78-seed",
+    "source_rel": "dlink/DIR-869_REVA_1.02B15/htdocs/cgibin",
+    "original": {
+     "body": "slices/non-cves/synthetic/dlink-DIR869-0x40bd78-seed/original_patched.c",
+     "expected": "not-vulnerable"
+    },
+    "mutants": [
+     {
+      "id": "dlink-DIR869-0x40bd78-seed",
+      "body": "slices/non-cves/synthetic/dlink-DIR869-0x40bd78-seed/mutated_vulnerable.c",
+      "mutation_name": "default-true-fallthrough",
+      "expected": "vulnerable"
+     }
+    ]
+   },
+   {
+    "unit": "dlink-DIR869-0x40befc-seed",
+    "flip": "slices/_track2_synth/dlink-DIR869-0x40befc-seed/track2_flip.json",
+    "gate": "dlink-DIR869-0x40befc-seed",
+    "source_rel": "dlink/DIR-869_REVA_1.02B15/htdocs/cgibin",
+    "original": {
+     "body": "slices/non-cves/synthetic/dlink-DIR869-0x40befc-seed/original_patched.c",
+     "expected": "not-vulnerable"
+    },
+    "mutants": [
+     {
+      "id": "dlink-DIR869-0x40befc-seed",
+      "body": "slices/non-cves/synthetic/dlink-DIR869-0x40befc-seed/mutated_vulnerable.c",
+      "mutation_name": "default-true-fallthrough (unauth->poweruser)",
+      "expected": "vulnerable"
+     }
+    ]
+   },
+   {
+    "unit": "dlink-DIR885L-0xc934-seed",
+    "flip": "slices/_track2_synth/dlink-DIR885L-0xc934-seed/track2_flip.json",
+    "gate": "dlink-DIR885L-0xc934-seed",
+    "source_rel": "dlink/DIR-885L_REVA_1.10B01/htdocs/cgibin",
+    "original": {
+     "body": "slices/_track2_synth/dlink-DIR885L-0xc934-seed/original_patched.c",
+     "expected": "not-vulnerable"
+    },
+    "mutants": [
+     {
+      "id": "dlink-DIR885L-0xc934-seed",
+      "body": "slices/_track2_synth/dlink-DIR885L-0xc934-seed/mutant_seed.c",
+      "mutation_name": "accept-invalid-session-as-group-0",
+      "expected": "vulnerable"
+     }
+    ]
+   },
+   {
+    "unit": "netgear-0x4178bc",
+    "flip": "slices/_track2_synth/netgear-0x4178bc/track2_flip.json",
+    "gate": "netgear-0x4178bc",
+    "source_rel": "netgear/R6020_V1.0.0.18/usr/bin/setupwizard.cgi",
+    "original": {
+     "body": "slices/non-cves/synthetic/netgear-0x4178bc-M4/original_patched.c",
+     "expected": "not-vulnerable"
+    },
+    "mutants": [
+     {
+      "id": "netgear-0x4178bc-M4",
+      "body": "slices/non-cves/synthetic/netgear-0x4178bc-M4/mutated_vulnerable.c",
+      "mutation_name": "default-true-fallthrough",
+      "expected": "vulnerable"
+     }
+    ]
+   },
+   {
+    "unit": "qnap-0x23f78",
+    "flip": "slices/_track2_synth/qnap-0x23f78/track2_flip.json",
+    "gate": "qnap-0x23f78",
+    "source_rel": "qnap/TS-X31P_QTS_4.3.4/home/httpd/cgi-bin/filemanager/utilRequest.cgi",
+    "original": {
+     "body": "slices/non-cves/synthetic/qnap-0x23f78-M4/original_patched.c",
+     "expected": "not-vulnerable"
+    },
+    "mutants": [
+     {
+      "id": "qnap-0x23f78-M4",
+      "body": "slices/non-cves/synthetic/qnap-0x23f78-M4/mutated_vulnerable.c",
+      "mutation_name": "Default-true fall-through",
+      "expected": "vulnerable"
+     },
+     {
+      "id": "qnap-0x23f78-M3",
+      "body": "slices/non-cves/synthetic/qnap-0x23f78-M3/mutated_vulnerable.c",
+      "mutation_name": "Inverted comparison",
+      "expected": "vulnerable"
+     }
+    ]
+   },
+   {
+    "unit": "tenda-AC10v1-0x428174-seed",
+    "flip": "slices/_track2_synth/tenda-AC10v1-0x428174-seed/track2_flip.json",
+    "gate": "tenda-AC10v1-0x428174-seed",
+    "source_rel": "tenda/AC10v1_V15.03.06.46/bin/httpd",
+    "original": {
+     "body": "slices/_track2_synth/tenda-AC10v1-0x428174-seed/original_patched.c",
+     "expected": "not-vulnerable"
+    },
+    "mutants": [
+     {
+      "id": "tenda-AC10v1-0x428174-seed",
+      "body": "slices/_track2_synth/tenda-AC10v1-0x428174-seed/mutant_default-true-fallthrough.c",
+      "mutation_name": "default-true-fallthrough",
+      "expected": "vulnerable"
+     }
+    ]
+   },
+   {
+    "unit": "tenda-AC10v1-0x434c80-seed",
+    "flip": "slices/_track2_synth/tenda-AC10v1-0x434c80-seed/track2_flip.json",
+    "gate": "tenda-AC10v1-0x434c80-seed",
+    "source_rel": "tenda/AC10v1_V15.03.06.46/bin/httpd",
+    "original": {
+     "body": "slices/non-cves/synthetic/tenda-AC10v1-0x434c80-seed/original_patched.c",
+     "expected": "not-vulnerable"
+    },
+    "mutants": [
+     {
+      "id": "tenda-AC10v1-0x434c80-seed",
+      "body": "slices/non-cves/synthetic/tenda-AC10v1-0x434c80-seed/mutated_vulnerable.c",
+      "mutation_name": "skip-check",
+      "expected": "vulnerable"
+     }
+    ]
+   },
+   {
+    "unit": "tp-link-0x4452f0",
+    "flip": "slices/_track2_synth/tp-link-0x4452f0/track2_flip.json",
+    "gate": "tp-link-0x4452f0",
+    "source_rel": "tp-link/TL-SG2210Pv5_5.0.0_20211201/usrImage/app/sbin/httpd",
+    "original": {
+     "body": "slices/non-cves/synthetic/tp-link-0x4452f0-M1/original_patched.c",
+     "expected": "not-vulnerable"
+    },
+    "mutants": [
+     {
+      "id": "tp-link-0x4452f0-M1",
+      "body": "slices/non-cves/synthetic/tp-link-0x4452f0-M1/mutated_vulnerable.c",
+      "mutation_name": "hardcoded-backdoor-cred",
+      "expected": "vulnerable"
+     },
+     {
+      "id": "tp-link-0x4452f0-M8",
+      "body": "slices/non-cves/synthetic/tp-link-0x4452f0-M8/mutated_vulnerable.c",
+      "mutation_name": "inject-ungated-sink",
+      "expected": "vulnerable"
+     }
+    ]
+   },
+   {
+    "unit": "tp-link-0x446d60",
+    "flip": "slices/_track2_synth/tp-link-0x446d60/track2_flip.json",
+    "gate": "tp-link-0x446d60",
+    "source_rel": "tp-link/TL-SG2210Pv5_5.20.0/usrImage/app/sbin/httpd",
+    "original": {
+     "body": "slices/_track2_synth/tp-link-0x446d60/original_patched.c",
+     "expected": "not-vulnerable"
+    },
+    "mutants": [
+     {
+      "id": "tp-link-0x446d60-M1",
+      "body": "slices/_track2_synth/tp-link-0x446d60/tp-link-0x446d60-M1_mutated_vulnerable.c",
+      "mutation_name": "hardcoded-backdoor-cred",
+      "expected": "vulnerable"
+     }
+    ]
+   },
+   {
+    "unit": "tp-link-0xd15c",
+    "flip": "slices/_track2_synth/tp-link-0xd15c/track2_flip.json",
+    "gate": "tp-link-0xd15c",
+    "source_rel": "tp-link/ArcherC5400EU2.0_1.2.2_20170912/usr/sbin/uhttpd",
+    "original": {
+     "body": "slices/non-cves/synthetic/tp-link-0xd15c-M1/original_patched.c",
+     "expected": "not-vulnerable"
+    },
+    "mutants": [
+     {
+      "id": "tp-link-0xd15c-M1",
+      "body": "slices/non-cves/synthetic/tp-link-0xd15c-M1/mutated_vulnerable.c",
+      "mutation_name": "Hardcoded backdoor cred",
+      "expected": "vulnerable"
+     },
+     {
+      "id": "tp-link-0xd15c-M2",
+      "body": "slices/non-cves/synthetic/tp-link-0xd15c-M2/mutated_vulnerable.c",
+      "mutation_name": "Accept-empty credential",
+      "expected": "vulnerable"
+     },
+     {
+      "id": "tp-link-0xd15c-M7",
+      "body": "slices/non-cves/synthetic/tp-link-0xd15c-M7/mutated_vulnerable.c",
+      "mutation_name": "Gate-hoist / skipped check",
+      "expected": "vulnerable"
+     }
+    ]
+   },
+   {
+    "unit": "zyxel-0x402ae8",
+    "flip": "slices/_track2_synth/zyxel-0x402ae8/track2_flip.json",
+    "gate": "zyxel-0x402ae8",
+    "source_rel": "zyxel/LTE3301-M209_V1.00-ABLG4/usr/sbin/httpd",
+    "original": {
+     "body": "slices/non-cves/synthetic/zyxel-0x402ae8-M1/original_patched.c",
+     "expected": "not-vulnerable"
+    },
+    "mutants": [
+     {
+      "id": "zyxel-0x402ae8-M1",
+      "body": "slices/non-cves/synthetic/zyxel-0x402ae8-M1/mutated_vulnerable.c",
+      "mutation_name": "hardcoded-backdoor-cred",
+      "expected": "vulnerable"
+     }
+    ]
+   },
+   {
+    "unit": "zyxel-0x42c16c",
+    "flip": "slices/_track2_synth/zyxel-0x42c16c/track2_flip.json",
+    "gate": "zyxel-0x42c16c",
+    "source_rel": "zyxel/LTE3301-M209_V1.00-ABLG4/usr/sbin/httpd",
+    "original": {
+     "body": "slices/non-cves/synthetic/zyxel-0x42c16c-M1/original_patched.c",
+     "expected": "not-vulnerable"
+    },
+    "mutants": [
+     {
+      "id": "zyxel-0x42c16c-M1",
+      "body": "slices/non-cves/synthetic/zyxel-0x42c16c-M1/mutated_vulnerable.c",
+      "mutation_name": "hardcoded-backdoor-cred",
+      "expected": "vulnerable"
+     },
+     {
+      "id": "zyxel-0x42c16c-M4",
+      "body": "slices/non-cves/synthetic/zyxel-0x42c16c-M4/mutated_vulnerable.c",
+      "mutation_name": "default-true-fallthrough",
+      "expected": "vulnerable"
+     }
+    ]
+   }
+  ]
+ },
+ "totals": {
+  "core_units": 45,
+  "flip_groups": 17,
+  "flip_instances": 45
+ }
+}

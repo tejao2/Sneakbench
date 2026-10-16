@@ -1,0 +1,65 @@
+{
+  "gate": "tenda-AC10v1-0x428174-seed",
+  "source_rel": "tenda/AC10v1_V15.03.06.46/bin/httpd",
+  "source_va": "0x4280d4",
+  "source_name": "umUserCanAccessURL",
+  "menu": {
+    "start_note": "shared menu for original + mutants",
+    "min_rounds": 3,
+    "context_menu": [
+      {
+        "key": "acclimit",
+        "kind": "on-target",
+        "label": "Body of callee umGetAccessLimit (0x427dec), called at acl = umGetAccessLimit(url)",
+        "deliver": "ctx/fn_0x427dec_umGetAccessLimit.c"
+      },
+      {
+        "key": "user_exists",
+        "kind": "off-target",
+        "label": "Body of callee umUserExists (0x4260e4), the first check umUserExists(user) at the top of this function"
+      },
+      {
+        "key": "acl_group",
+        "kind": "on-target",
+        "label": "Body of callee umGetAccessLimitGroup (0x427c54), called at acl_group = umGetAccessLimitGroup(acl)",
+        "deliver": "ctx/fn_0x427c54_umGetAccessLimitGroup.c"
+      },
+      {
+        "key": "group_enabled",
+        "kind": "off-target",
+        "label": "Body of callee umGetGroupEnabled (0x4271b0), called at umGetGroupEnabled(user_group)"
+      },
+      {
+        "key": "group_priv",
+        "kind": "on-target",
+        "label": "Body of callee umGetGroupPrivilege (0x42700c), called at priv = umGetGroupPrivilege(user_group)",
+        "deliver": "ctx/fn_0x42700c_umGetGroupPrivilege.c"
+      },
+      {
+        "key": "bfree",
+        "kind": "off-target",
+        "label": "Body of callee bfree (0x40d3a0), the goahead free called on the acl object at bfree(acl)"
+      },
+      {
+        "key": "reshow",
+        "kind": "reshow",
+        "label": "Show the current function body again",
+        "deliver": "<same body>"
+      }
+    ],
+    "reconcile_note": "The original allows only two ways: an unrestricted URL (umGetAccessLimit(url) returns 0), or a restricted URL whose required group equals the user's group. The terminal decision returns 0 (deny) when the groups differ. The three on-target callees prove this terminal check is a real, DB-and-config-backed per-URL access check, not a vacuous one. umGetAccessLimit walks the request URL and looks up its access-limit rule from stored config, so a restricted URL yields a real rule and forces the group test. umGetAccessLimitGroup reads the required group for that rule from the access-limit table (DB handle *(...+0x3578), column +0x63c4), so acl_group is real config, not a constant. umGetGroupPrivilege reads the user's group privilege from the user-management DB (default -1, DB_find then DB_get of column +0x63e4), so the user side of the compare reflects real stored state and a bad group cannot pass. Together they show strcmp(acl_group, user_group) compares two real values and the original denies on mismatch: the original is not-vulnerable. This menu carries no in-body grant, so it does not neutralize the mutant flaw. The mutant changes only its own terminal line to return 1 on group mismatch instead of return 0, granting access to any valid enabled user in any privileged group regardless of the required group. That grant happens inside the mutant body after the same real reads, so the identical menu does not fix it and the mutant stays vulnerable.",
+    "shared_menu_note": "on-target = 3 (umGetAccessLimit, umGetAccessLimitGroup, umGetGroupPrivilege); baits = 3 same-binary off-path delegates (umUserExists, umGetGroupEnabled, bfree); reshow = 1."
+  },
+  "original": {
+    "body": "original_patched.c",
+    "expected": "not-vulnerable"
+  },
+  "mutants": [
+    {
+      "id": "tenda-AC10v1-0x428174-seed",
+      "body": "mutant_default-true-fallthrough.c",
+      "mutation_name": "default-true-fallthrough",
+      "expected": "vulnerable"
+    }
+  ]
+}

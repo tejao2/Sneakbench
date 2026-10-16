@@ -1,0 +1,17 @@
+// Command / action sinks in fcn.00044078.
+
+// doSystem : imported PLT stub (rsym.doSystem @ 0xd6d4). Body lives in ASUS
+//   shared libshared. Signature doSystem(char *fmt, ...) -> vsnprintf + system().
+//   In-body it is called ONCE, as doSystem(*0x45210), with a single literal arg
+//   "ip -s -s neigh flush all" and no varargs. Executed command = that literal.
+//   Guard: reached only if bVar1 (a wireless nvram value actually changed) AND
+//   nvram_get_int("nmp_db_delete")==0.
+
+// notify_rc : imported. ASUS IPC: writes a service token to the rc/message queue
+//   (rc_service nvram + kill(SIGUSR1)) for the rc process to act on; the argument
+//   is a service name. In-body args are all constants:
+//     notify_rc(*0x45204) = notify_rc("restart_firewall")
+//     notify_rc(uVar10)   where uVar10 = *0x45190 (constant service enum/string)
+
+// func_0x0002cf38 (eval_action/notify helper) : called only with constants
+//   (*0x451c0, *0x450b8/*0x450bc, *0x451d0).

@@ -1,0 +1,50 @@
+{
+ "unit_id": "INJ-DNR-322L_REVA_2.60B13-01378c__DNR-322L_REVA_2.60B13",
+ "binary": "cgi/account_mgr.cgi",
+ "cwe": "CWE-78",
+ "terminal": "not-vulnerable",
+ "start_slice": "0x0001378c",
+ "min_rounds": 2,
+ "context_menu": [
+  {
+   "key": "callee_safe_system",
+   "kind": "on-target",
+   "label": "body of sym.imp.safe_system",
+   "deliver": "ctx/callee_0x0000a094.c"
+  },
+  {
+   "key": "raw_system_inputs",
+   "kind": "on-target",
+   "label": "the raw system() arguments: sprintf format *0x138f0 = \"more /etc/passwd | grep :%d: > /tmp/tmp_old_group_etc_passwd_user.quota\" and the constant *0x13914 = \"makedav start & > /dev/null\"",
+   "deliver": "Both raw system() calls in cgi_group_del carry no attacker text. (1) At 0x00013814 system(acStack_614) runs the buffer built by sprintf(acStack_614, *0x138f0, *(iStack_14 + 8)). The format *0x138f0 = \"more /etc/passwd | grep :%d: > /tmp/tmp_old_group_etc_passwd_user.quota\" has exactly one conversion, %d, and its argument *(iStack_14 + 8) is the gr_gid field (an integer) of the struct group returned by getgrnam(group_name). So the only variable spliced into this shell string is a decimal integer; the raw group name is never placed here. (2) At 0x000138e0 system(*0x13914) runs the fixed constant string *0x13914 = \"makedav start & > /dev/null\" (constant in .rodata), with no cgi value substituted. Neither raw system() is attacker-controllable."
+  },
+  {
+   "key": "bait_set_group_quota",
+   "kind": "off-target",
+   "label": "body of sym.LIB_Set_Group_Quota"
+  },
+  {
+   "key": "bait_ftp_del_group",
+   "kind": "off-target",
+   "label": "body of sym.imp.LIB_FTP_Del_Group"
+  },
+  {
+   "key": "bait_syslog_const",
+   "kind": "off-target",
+   "label": "the constant at *0x13908 = \"Group [%s] has been deleted.\""
+  },
+  {
+   "key": "login_gate",
+   "kind": "on-target",
+   "label": "Body of sym.check_login (0x22054), the session-cookie check that cgiMain runs (if (check_login()==1)) before dispatching the requested command",
+   "deliver": "ctx/fn_0x22054_login_gate.c"
+  },
+  {
+   "key": "reshow",
+   "kind": "reshow",
+   "label": "show the current function body again",
+   "deliver": "<same body>"
+  }
+ ],
+ "reconcile_note": "cgi_group_del reads one attacker-controlled value: cgiFormString(*0x138ec = \"group\", auStack_414, 0x400), the group name. That name reaches three places, and the verdict is decided by where it goes as a potential command: (a) safe_system(0, 0, \"account\", \"-d\", \"-g\", auStack_414, 0), (b) sprintf into the first raw system() buffer, and (c) the LIB_* quota / FTP / syslog helpers. Two on-target artifacts resolve it to not-vulnerable, and each is independently necessary. (1) sym.imp.safe_system (PLT stub 0x0000a094, shared cgi helper): its body packs the varargs into a discrete argv[] array and calls safe_exec, which fork()s and calls execvp(argv0, argv). No system/popen/\"sh -c\" is on this path, so the group name stays a single literal argv element after \"-g\" and shell metacharacters never reach a shell. (2) The raw system() arguments: the first raw system() runs a sprintf buffer whose format *0x138f0 = \"more /etc/passwd | grep :%d: > /tmp/tmp_old_group_etc_passwd_user.quota\" splices only %d, the numeric gr_gid from getgrnam(), not the raw name; the second raw system() runs the fixed constant *0x13914 = \"makedav start & > /dev/null\" with no cgi value. So the only shell sinks in the function are fed either a discrete-argv exec (group name) or non-attacker data (an integer and a constant). Dropping either item leaves the verdict undecidable: without the safe_system body the group-name path could be a shell splice, and without the raw system() inputs the two system() calls could carry the raw name. Neither on-target re-shows the start body (one is a different function, one is a literal), so min_rounds = 2. Baits are real off-path items in the same function that also receive the group name but are not command sinks: sym.LIB_Set_Group_Quota (quota config write with \"HD_a2\"/\"HD_b2\"), sym.imp.LIB_FTP_Del_Group (FTP account teardown), and the syslog format *0x13908 = \"Group [%s] has been deleted.\" (a log message). Each is tempting to a model chasing \"where does the group name go\", but none reaches a shell; picking any ends the unit. Terminal is not-vulnerable. The upstream session check sym.check_login (0x22054) gates this handler, so the requested command runs only for a request that already holds a valid session."
+}

@@ -1,0 +1,64 @@
+{
+  "gate": "tp-link-0x446d60",
+  "source_rel": "tp-link/TL-SG2210Pv5_5.20.0/usrImage/app/sbin/httpd",
+  "source_va": "0x446d60",
+  "source_name": "sym.httpRpmPass",
+  "menu": {
+    "start_note": "shared menu for original + mutants",
+    "min_rounds": 3,
+    "context_menu": [
+      {
+        "key": "authget",
+        "kind": "on-target",
+        "label": "body of sym.httpAuthorizationGet at 0x43ca5c",
+        "deliver": "ctx/fn_0043ca5c_authget.c"
+      },
+      {
+        "key": "pwddecode",
+        "kind": "on-target",
+        "label": "body of sym.httpPwdDecode at 0x446b38",
+        "deliver": "ctx/fn_00446b38_pwddecode.c"
+      },
+      {
+        "key": "auth_role",
+        "kind": "on-target",
+        "label": "evidence notes: how httpRpmPass is registered as the HTTP Basic-auth handler and how REMOTE_USER is granted",
+        "deliver": "ctx/auth_role_evidence.md"
+      },
+      {
+        "key": "bait_hdrset",
+        "kind": "off-target",
+        "label": "body of the callee at 0x496f7c that writes the WWW-Authenticate response header"
+      },
+      {
+        "key": "bait_mimehdr",
+        "kind": "off-target",
+        "label": "body of sym.httpMimeHdrGet at 0x4976f0 (the request header-map lookup called inside httpAuthorizationGet)"
+      },
+      {
+        "key": "bait_realm",
+        "kind": "off-target",
+        "label": "value of the constant at *0x497a40 (the realm string used in the Basic challenge)"
+      },
+      {
+        "key": "reshow",
+        "kind": "reshow",
+        "label": "show the current function body again",
+        "deliver": "<same body>"
+      }
+    ],
+    "reconcile_note": "The three on-target artifacts prove the ORIGINAL not-vulnerable. httpAuthorizationGet (0x43ca5c) shows arg1_00 is the raw attacker-controlled Authorization request header, so we know exactly what value the decision tests. httpPwdDecode (0x446b38) shows the credential is accepted only after a real base64 decode plus a ':' user/pass split, and the evidence notes show REMOTE_USER (the authentication grant) is set only on the decoded identity that then matches the configured user table, with httpRpmPass registered as the Basic-auth handler at 0x4042e4. On the original path there is no literal credential and no grant before the decode+table check, so the gate is sound. The same menu does NOT neutralize the mutant: the M1 flaw is a literal strncmp(arg1_00, \"YWRtaW46Nzg5MA==\", 0x10) in the mutant's OWN body that sets REMOTE_USER and returns before httpPwdDecode and the user-table walk. The artifacts confirming arg1_00 is the attacker header and that REMOTE_USER is the real grant make the backdoor more damning, not less, so the mutant still resolves vulnerable under identical context."
+  },
+  "original": {
+    "body": "original_patched.c",
+    "expected": "not-vulnerable"
+  },
+  "mutants": [
+    {
+      "id": "tp-link-0x446d60-M1",
+      "body": "tp-link-0x446d60-M1_mutated_vulnerable.c",
+      "mutation_name": "hardcoded-backdoor-cred",
+      "expected": "vulnerable"
+    }
+  ]
+}

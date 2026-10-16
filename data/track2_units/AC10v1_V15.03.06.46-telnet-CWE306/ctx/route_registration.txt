@@ -1,0 +1,56 @@
+ROUTE REGISTRATION  ---  how /goform/telnet is mapped to sym.TendaTelnet
+========================================================================
+Binary: tenda/AC10v1_V15.03.06.46/bin/httpd  (ELF32 MIPS, not stripped)
+
+1) The form handler is registered by name "telnet":
+------------------------------------------------------
+sym.formDefineTendDa  (0x0044d790, Form_define.c), registration site @ 0x0044e54c:
+
+  0x0044e54c   lw   v0, -0x7b20(gp)            ; v0 = 0x510000 (rodata base)
+  0x0044e550   addiu a0, v0, -0x5648           ; a0 = 0x50a9b8 = "telnet"   (the form NAME)
+  0x0044e554   lw   a1, -sym.TendaTelnet(gp)   ; a1 = 0x0045b860 = sym.TendaTelnet (handler)
+  0x0044e558   lw   v0, -sym.websFormDefine(gp)
+  0x0044e560   jalr t9                          ; websFormDefine("telnet", TendaTelnet)
+
+  => websFormDefine("telnet", sym.TendaTelnet)   at Form_define.c:194
+
+  String at 0x0050a9b8 = "telnet".
+  (0x510000 - 0x5648 = 0x50a9b8, confirmed.)
+
+  This form-pointer also appears in the handler table:
+    0x0053f5fc : 0x0045b860 (TendaTelnet), among fromSysToolTime / fromSysToolReboot /
+    fromSysToolRestoreSet / fromSysToolChangePwd / ... (the Tenda /goform admin handlers).
+
+2) The full URL path is "/goform/telnet":
+------------------------------------------
+The GoAhead form dispatcher sym.websFormHandler (0x004163b0) is installed for the
+"/goform" URL prefix (see below). It strips "/goform/" and looks the remainder up in the
+websForm symbol table by name. So form name "telnet" is reached as URL "/goform/telnet".
+
+  rodata string 0x00507e6c = "/goform/telnet"   (the exact literal the security
+                                                 handler matches against, see auth_middleware.c)
+  rodata string 0x00507b7c = "/goform"          (the prefix websFormHandler is bound to)
+
+3) Handler-chain install order  (sym.initWebs, 0x004344ec.., main.c:524-525):
+------------------------------------------------------------------------------
+  main.c:524  websUrlHandlerDefine(<prefix@0x507a1c>, 0, 0, sym.R7WebsSecurityHandler)  flag=1
+  main.c:525  websUrlHandlerDefine("/goform",         0, 0, sym.websFormHandler)         flag=0
+
+  0x004344f4   lw   v0, -0x7fd0(gp)             ; 0x500000
+  0x004344f8   addiu a0, v0, 0x7a1c            ; R7 handler URL prefix (root)
+  0x00434504   lw   a3, -sym.R7WebsSecurityHandler(gp)   ; 0x00434c80
+  0x00434508   lw   v0, -sym.websUrlHandlerDefine(gp)
+  0x00434510   jalr t9                          ; install security handler FIRST (flag=1)
+  ...
+  0x00434524   addiu a0, v0, 0x7b7c            ; "/goform"
+  0x00434530   lw   a3, -sym.websFormHandler(gp)         ; 0x004163b0
+  0x00434534   lw   v0, -sym.websUrlHandlerDefine(gp)
+  0x0043453c   jalr t9                          ; install form dispatcher (flag=0)
+
+  => sym.R7WebsSecurityHandler is registered first (flag=1) and runs on EVERY request before
+     the /goform form dispatch. Its body is ctx/auth_middleware.c.
+
+REQUEST FLOW for GET /goform/telnet:
+  R7WebsSecurityHandler(url="/goform/telnet")  -> [auth decision]  -> if it returns 0
+  without finishing the response, websFormHandler("/goform") dispatches "telnet" ->
+  sym.TendaTelnet -> `killall -9 telnetd; telnetd -b <lan.ip> &`  (telnet enabled).

@@ -1,0 +1,48 @@
+{
+ "terminal": "not-vulnerable",
+ "start_slice": "0x44078",
+ "min_rounds": 3,
+ "context_menu": [
+  {
+   "key": "const_0x45210",
+   "kind": "on-target",
+   "label": "the constant at *0x00045210 = \"ip -s -s neigh flush all\"",
+   "deliver": "ctx/const_0x45210.txt"
+  },
+  {
+   "key": "callee_request_source",
+   "kind": "on-target",
+   "label": "body of function 0x0001218c",
+   "deliver": "ctx/callee_request_source.c"
+  },
+  {
+   "key": "callee_doSystem_notify_rc",
+   "kind": "on-target",
+   "label": "body of function 0x0002cf38",
+   "deliver": "ctx/callee_doSystem_notify_rc.txt"
+  },
+  {
+   "key": "offpath_keybuilder_0x17754",
+   "kind": "off-target",
+   "label": "body of function 0x00017754"
+  },
+  {
+   "key": "offpath_const_0x45204",
+   "kind": "off-target",
+   "label": "the constant at *0x00045204 = \"restart_firewall\""
+  },
+  {
+   "key": "login_gate",
+   "kind": "on-target",
+   "label": "Body of fcn.0005f168 (0x44078 handler's dispatcher gate), the asus_token cookie validator that fcn.0000f6ec runs before the apply.cgi/applyapp.cgi handler table entry is invoked",
+   "deliver": "ctx/fn_0x5f168_login_gate.c"
+  },
+  {
+   "key": "reshow_start_body",
+   "kind": "reshow",
+   "label": "show the current function body again",
+   "deliver": "<same body>"
+  }
+ ],
+ "reconcile_note": "The three on-target items together close the one gap that made the blind pass need more context, namely the target of the global pointer passed to doSystem. (1) The constant at *0x00045210 resolves to the fixed literal \"ip -s -s neigh flush all\", so the single raw command is a hardcoded string. (2) The callee at 0x0002cf38 shows doSystem is called once with that single literal and no varargs, and the other action-dispatch sinks (notify_rc and the eval/action helper) take only constant service names such as restart_firewall and restart_set_dataset, not shell lines. (3) The callee at 0x0001218c shows the request values read via json_object_get_string and hsearch_r flow only into nvram_set, comparisons, logging and JSON, never into a command argument. Delivering all three proves every command and action sink argument is a fixed constant and that no attacker value is spliced, so the terminal is not-vulnerable. Dropping any one leaves the verdict undecidable: without (1) the doSystem argument is an opaque global, without (2) varargs into doSystem or input into notify_rc or the eval helper cannot be ruled out, without (3) an unenumerated path from a request value to a shell cannot be ruled out. The off-target items are same-binary off-path distractors: 0x00017754 is a strlcpy plus strlcat nvram-key builder, and *0x00045204 is the constant service name restart_firewall; neither is needed for the verdict. The upstream session check fcn.0005f168 (0x5f168), the asus_token cookie validator run by the dispatcher fcn.0000f6ec, gates this handler, so the requested command runs only for a request that already holds a valid session."
+}

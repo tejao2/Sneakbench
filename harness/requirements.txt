@@ -1,0 +1,4 @@
+numpy
+matplotlib
+# The harness calls an OpenAI-compatible endpoint over the standard library (urllib);
+# no extra client is required. Serve models with vLLM or any compatible server.

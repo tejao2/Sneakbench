@@ -1,0 +1,58 @@
+{
+  "gate": "dlink-DIR885L-0xc934-seed",
+  "source_rel": "dlink/DIR-885L_REVA_1.10B01/htdocs/cgibin",
+  "source_va": "0xc934",
+  "source_name": "getcfg_session_gate",
+  "menu": {
+    "start_note": "shared menu for original + mutants",
+    "min_rounds": 2,
+    "context_menu": [
+      {
+        "key": "store_validate",
+        "kind": "on-target",
+        "label": "Body of callee fcn.0000c7a4 (0xc7a4), the session-store validator called at level = fcn.0000c7a4(req_cb, req_buf, content_len)",
+        "deliver": "ctx/callee_c7a4_session_store_validate.c"
+      },
+      {
+        "key": "session_resolve",
+        "kind": "off-target",
+        "label": "Body of callee fcn.0000acf0 (0xacf0), called at level = fcn.0000acf0(req_cb, req_buf) before the length check"
+      },
+      {
+        "key": "caller_consumer",
+        "kind": "on-target",
+        "label": "Body of the caller fcn.0000d760 (0xd760), which invokes this function via fcn.0000c934(...) and branches on the returned value",
+        "deliver": "ctx/caller_d760_authorized_group_consumer.c"
+      },
+      {
+        "key": "oversize_note",
+        "kind": "off-target",
+        "label": "Body of callee fcn.0000ae2c (0xae2c), called on the content_len > max_len branch"
+      },
+      {
+        "key": "group_getter",
+        "kind": "off-target",
+        "label": "Body of fcn.00012050 (0x12050), called inside fcn.0000d760 to build the AUTHORIZED_GROUP=%d line"
+      },
+      {
+        "key": "reshow",
+        "kind": "reshow",
+        "label": "Show the current function body again",
+        "deliver": "<same body>"
+      }
+    ],
+    "reconcile_note": "The original returns `level`, and the caller fcn.0000d760 decides on that return: >= 0 emits AUTHORIZED_GROUP=%d and forwards the getcfg request, < 0 replies HTTP 400 'unsupported HTTP request' (the -100 over-limit case handled separately). So a negative return is a deny. The validator fcn.0000c7a4 (session_store_validate) dispatches on CONTENT_TYPE against the handler table at 0x392ac, returns the stored group level for a live session, and returns 0xffffffff (negative) when no handler matches or the session is invalid/absent. In the original, when content_len != 0 the gate sets level = fcn.0000c7a4(...) and returns that value unchanged: an invalid or absent session yields a negative, and the caller denies. The gate fails closed. These two artifacts (the validator's negative-on-invalid-session result plus the caller's negative-means-deny polarity) are together necessary and sufficient to prove the original not-vulnerable; fcn.0000acf0 only parses the request-side session id from REQUEST_URI and does not decide the grant, so it is off-path for the verdict. This menu carries no in-body grant, so it does not neutralize the mutant flaw. The mutant adds `if (level < 0) level = 0;` immediately after level = fcn.0000c7a4(...). Under this same context an invalid session still returns negative from fcn.0000c7a4, but the mutant coerces it to 0, which fcn.0000d760 treats as authorized group 0 and forwards the request. The mutant stays vulnerable (CWE-287 authentication bypass) under this identical menu."
+  },
+  "original": {
+    "body": "original_patched.c",
+    "expected": "not-vulnerable"
+  },
+  "mutants": [
+    {
+      "id": "dlink-DIR885L-0xc934-seed",
+      "body": "mutant_seed.c",
+      "mutation_name": "accept-invalid-session-as-group-0",
+      "expected": "vulnerable"
+    }
+  ]
+}

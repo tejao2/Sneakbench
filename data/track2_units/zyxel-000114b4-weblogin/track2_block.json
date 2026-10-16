@@ -1,0 +1,36 @@
+{
+  "terminal": "not-vulnerable",
+  "start_slice": "0x000114b4",
+  "min_rounds": 2,
+  "context_menu": [
+    {
+      "key": "m1",
+      "kind": "off-target",
+      "label": "body of function fcn.00012ce8"
+    },
+    {
+      "key": "m2",
+      "kind": "on-target",
+      "label": "body of function fcn.00012898 (the PAM authentication routine)",
+      "deliver": "ctx/callee_0x12898.c"
+    },
+    {
+      "key": "m3",
+      "kind": "off-target",
+      "label": "body of function fcn.000119f0"
+    },
+    {
+      "key": "m4",
+      "kind": "on-target",
+      "label": "body of the caller main (0x00011db8)",
+      "deliver": "ctx/fn_caller_no_grant.c"
+    },
+    {
+      "key": "m5",
+      "kind": "reshow",
+      "label": "show the current function body again",
+      "deliver": "<same body>"
+    }
+  ],
+  "reconcile_note": "The start body (fcn.000114b4) is a pure side-effect-free predicate that returns 1 for admin/1234, the classic hardcoded-backdoor shape, so body-only is need-more-context. Two deliveries resolve the terminal to not-vulnerable, and each is independently necessary. (1) The caller body at 0x00011db8 (deliver ctx/fn_caller_no_grant.c) shows how the return is consumed: a match only writes two stack flag buffers and control falls through unconditionally to the callee at 0x00012898; no session, cookie, or privileged op is gated on the match. Without it, another caller could still treat the return as a grant. (2) The callee body at 0x00012898 (deliver ctx/callee_0x12898.c) shows the real credential check: pam_authenticate runs unconditionally, and the factory-default flags only feed sprintf/pam_putenv timing (zyxel_reauthtime/zyxel_leasetime), never the auth decision. Without it, one could not rule out that the flags force the check to pass. Together they establish that the admin/1234 match grants nothing and the real gate is elsewhere, so not-vulnerable holds. Off-target 0x00012ce8 is CGI request/cookie parsing plumbing and 0x000119f0 is a malloc/strlen buffer helper; both are same-binary functions on the periphery of this call path and are not needed for the verdict."
+}

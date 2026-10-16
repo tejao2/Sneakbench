@@ -1,0 +1,21 @@
+// _eval sink in fcn.00010290 : rsym._eval(&uStack_70, 0, 0, 0)
+// _eval is imported (imp._eval @ 0x4e44 -> 0xce44). It is the ASUS/Tomato
+// discrete-argv exec wrapper: int _eval(char *const argv[], path, timeout, ppid)
+// -> fork + execvp(argv[0], argv). argv elements are discrete tokens.
+
+// The &uStack_70 argv array is built three ways in the body; all resolved:
+
+// (1) local build:  argv = { *0x104cc, auStack_50, NULL }
+//     argv[0] = "gencert.sh"
+//     argv[1] = auStack_50 = sprintf("%llu", uStack_30, uStack_2c & 0x7fffffff)
+//               (the two uStack values come from f_read("/dev/urandom", &uStack_30, 8))
+
+// (2) global table *0x10494 -> 0x4e280:
+//     { "tar", "-xzf", "/tmp/cert.tgz", "-C", "/", "etc/cert.pem", "etc/key.pem", NULL }
+
+// (3) global table *0x104b8 -> 0x4e2a0:
+//     { "tar", "-xzf", "/tmp/cert.tgz", "-C", "/", "etc/intermediate_cert.pem", NULL }
+
+// All argv tokens are rodata constants (case 1 adds only a numeric random).
+// nvram_get_file("https_crt_file", "/tmp/cert.tgz", 0x2000) writes the nvram
+// cert blob to that file, which case (2)/(3) then EXTRACT with discrete-argv tar.

@@ -1,0 +1,50 @@
+{
+ "unit_id": "INJ-DNR-322L_REVA_2.60B13-00f104__DNR-322L_REVA_2.60B13",
+ "binary": "cgi/system_mgr.cgi",
+ "cwe": "CWE-78",
+ "terminal": "not-vulnerable",
+ "start_slice": "0x0000f104",
+ "min_rounds": 2,
+ "context_menu": [
+  {
+   "key": "callee_safe_system",
+   "kind": "on-target",
+   "label": "body of sym.imp.safe_system",
+   "deliver": "ctx/callee_0x1690.c"
+  },
+  {
+   "key": "var_origin_system_const",
+   "kind": "on-target",
+   "label": "the constant at *0x0000f458 = \"cat /var/log/user.log.old /var/log/user.log 2>/dev/null > /tmp/merge_user.log\"",
+   "deliver": "*0x0000f458 = \"cat /var/log/user.log.old /var/log/user.log 2>/dev/null > /tmp/merge_user.log\"  (constant string in .rodata @ 0x00013fe8; the only argument to the raw system() call, no format directive, no cgi input spliced in)"
+  },
+  {
+   "key": "callee_html_escape",
+   "kind": "off-target",
+   "label": "body of sym.imp.cgiHtmlEscape"
+  },
+  {
+   "key": "const_sprintf_fmt",
+   "kind": "off-target",
+   "label": "the constant at *0x0000f47c = \"%c%c%c%c%c%c %c%c%c%c%c%c%c%c\""
+  },
+  {
+   "key": "callee_xml",
+   "kind": "off-target",
+   "label": "body of sym.imp.xml_set_str"
+  },
+  {
+   "key": "login_gate",
+   "kind": "on-target",
+   "label": "Body of sym.check_login (0x11a30), the session-cookie check that cgiMain runs (if (check_login()==1)) before dispatching the requested command",
+   "deliver": "ctx/fn_0x11a30_login_gate.c"
+  },
+  {
+   "key": "reshow",
+   "kind": "reshow",
+   "label": "show the current function body again",
+   "deliver": "<same body>"
+  }
+ ],
+ "reconcile_note": "Terminal is not-vulnerable. cgi_get_log_item reads exactly one cgi field with cgiFormString(*0xf444, auStack_840, 8) at 0x0000f104 and that value flows only into the safe_system call safe_system(*0xf460, 0, *0xf464, *0xf468, auStack_840, *0xf45c, 0), where *0xf460=\"/tmp/user.log\", *0xf464=\"tail\", *0xf468=\"-n\", *0xf45c=\"/tmp/merge_user.log\". Two facts are each independently required. (1) The callee delivered as ctx/callee_0x1690.c is safe_system (0x1690 in lib/libsafe_system.so, imported by system_mgr.cgi as imp.safe_system): its body packs the varargs into a discrete argv[] array (one pointer per argument) and hands (argv[0], argv) to safe_exec, which fork()s and calls execvp(argv[0], argv). The library imports execvp and fork, not system or popen, and never builds a single command string or invokes a shell, so the cgi value stays a separate vector argument (the count for \"tail -n\") and cannot inject shell syntax. (2) The constant at *0x0000f458 is the only argument to the one raw system() call in the function; it resolves to a fixed .rodata string (0x00013fe8) with no format directive and no cgi value spliced in, so that call carries nothing attacker-controlled. With both facts the one exec path that cgi data can reach is closed and the raw call is constant, which resolves the terminal to not-vulnerable. Dropping either fact leaves one path unproven and the verdict undecidable, so min_rounds = 2. Off-path baits (no deliver, picking one ends the unit): cgiHtmlEscape is the output-escaping callee used only in the HTML print loop; the constant at *0x0000f47c is the sprintf format that feeds fprintf into the response page, not a command sink; xml_set_str is a config-write import of this binary that cgi_get_log_item does not call. None of them is needed for the verdict. The upstream session check sym.check_login (0x11a30) gates this handler, so the requested command runs only for a request that already holds a valid session."
+}

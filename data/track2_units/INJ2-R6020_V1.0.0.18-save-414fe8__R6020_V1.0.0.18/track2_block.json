@@ -1,0 +1,40 @@
+{
+  "unit_id": "INJ2-R6020_V1.0.0.18-save-414fe8__R6020_V1.0.0.18",
+  "binary": "bin/htpwd_recovery.cgi",
+  "cwe": "CWE-78",
+  "terminal": "not-vulnerable",
+  "start_slice": "0x00414fe8",
+  "start_body": "start_body_trimmed.c",
+  "min_rounds": 2,
+  "context_menu": [
+    {
+      "key": "callee_COMMAND_libscmisc_0x55cc",
+      "kind": "on-target",
+      "label": "body of sym.imp.COMMAND (the COMMAND wrapper in libscmisc.so @0x55cc)",
+      "deliver": "ctx/callee_COMMAND_libscmisc_0x55cc.c"
+    },
+    {
+      "key": "const_arg_ddns_register",
+      "kind": "on-target",
+      "label": "the constant at *0x0047c7c4 = \"/usr/sbin/rc ddns register > /dev/null 2>&1 &\" (the raw system() argument used in sym.save)",
+      "deliver": "*0x0047c7c4 = \"/usr/sbin/rc ddns register > /dev/null 2>&1 &\" (constant .rodata string, the system() argument in sym.save). Other raw system()/COMMAND() arguments in sym.save: *0x0047c5e8 = \"/usr/sbin/rc ddns register\", str._usr_sbin_rc_wan_restart, str._usr_sbin_rc_firewall_start; and a fixed format plus fixed arg COMMAND(\"/usr/sbin/touch %s\", \"/tmp/brs_trigger_wan_idle\"). pcVar17 passed to COMMAND at 0x00417dc4 and 0x00417f7c is reassigned to a constant command string immediately before each call."
+    },
+    {
+      "key": "bait_wan_connected",
+      "kind": "off-target",
+      "label": "body of sym.wan_connected: the callee that the wan-state nvram value read in sym.save is passed to"
+    },
+    {
+      "key": "bait_inet_network",
+      "kind": "off-target",
+      "label": "body of sym.imp.inet_network: the callee that the fix_ipaddr / fix_gateway nvram strings read in sym.save are passed to"
+    },
+    {
+      "key": "reshow",
+      "kind": "reshow",
+      "label": "show the current function body again",
+      "deliver": "<same body>"
+    }
+  ],
+  "reconcile_note": "Terminal = not-vulnerable (CWE-78). In sym.save (htpwd_recovery.cgi save handler) every argument that reaches a shell sink is a fixed constant. The two on-target artifacts settle the verdict. (1) The COMMAND wrapper body shows COMMAND does not escape: it vsnprintf()s the format and args into a 0x400 buffer and write()s that string to a control FIFO a daemon runs, so COMMAND would be injectable only if attacker data reached its format string. (2) The representative fixed-const argument shows what actually reaches the sinks: *0x0047c7c4 = \"/usr/sbin/rc ddns register > /dev/null 2>&1 &\" is a constant .rodata command passed verbatim to system(), with no cgi or nvram value spliced in, and the same holds for every other system()/COMMAND() call in the function (all fixed command strings, or a fixed format plus a fixed arg, and pcVar17 is reassigned to a constant before each COMMAND(pcVar17)). The nvram values this handler reads (fix_ipaddr, fix_gateway, pppoe/l2tp/pptpc credentials, wan_account) flow only to inet_network / wan_connected / strcmp comparisons, never to a shell. So no attacker-controlled data reaches a command line, and the terminal is not-vulnerable. Dropping either on-target leaves it undecidable: without the wrapper body the model cannot know whether COMMAND escapes its input, and without the constant-arg evidence it cannot rule out an attacker value spliced in at a sink. Baits: sym.imp.inet_network and sym.wan_connected are the real destinations of the nvram values, so a model tracing where the nvram data goes is tempted to open them, but they are numeric / comparison consumers off the shell path and are not needed for the verdict, so picking either ends the unit."
+}

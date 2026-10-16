@@ -1,0 +1,41 @@
+{
+  "terminal": "not-vulnerable",
+  "start_slice": "0x10290",
+  "min_rounds": 2,
+  "context_menu": [
+    {
+      "key": "const_0x104b0",
+      "kind": "on-target",
+      "label": "the constant at *0x000104b0 = \"cat /etc/key.pem /etc/cert.pem > /etc/server.pem\"",
+      "deliver": "ctx/const_0x104b0.txt"
+    },
+    {
+      "key": "callee__eval_argv",
+      "kind": "on-target",
+      "label": "body of sym.imp._eval",
+      "deliver": "ctx/callee__eval_argv.txt"
+    },
+    {
+      "key": "callee_nvram_match_0xd54c",
+      "kind": "off-target",
+      "label": "body of function 0x0000d54c"
+    },
+    {
+      "key": "callee_nvram_get_or_default_0xd530",
+      "kind": "off-target",
+      "label": "body of function 0x0000d530"
+    },
+    {
+      "key": "const_0x104bc",
+      "kind": "off-target",
+      "label": "the constant at *0x000104bc = \"Generating SSL certificate...\""
+    },
+    {
+      "key": "reshow_body",
+      "kind": "reshow",
+      "label": "show the current function body again",
+      "deliver": "<same body>"
+    }
+  ],
+  "reconcile_note": "The only raw system() argument is *0x104b0, a fixed .rodata constant (\"cat /etc/key.pem /etc/cert.pem > /etc/server.pem\") with no format specifier and no attacker splice (const_0x104b0). Every _eval call is a discrete-argv execvp with rodata token tables (tar / gencert.sh) plus a numeric /dev/urandom value, so no shell command line is ever built (callee__eval_argv at 0x0000ce44). Delivering both shows that no request input reaches any shell, which resolves the terminal to not-vulnerable. Dropping either leaves it undecidable: without const_0x104b0 the raw system() arg is unknown, and without callee__eval_argv the _eval calls stay opaque. The nvram config value (https_crt_file) only reaches a discrete-argv tar, off the shell path, so it is an off-target distractor."
+}

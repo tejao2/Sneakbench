@@ -1,0 +1,42 @@
+{
+ "terminal": "not-vulnerable",
+ "start_slice": "0x0000be08",
+ "min_rounds": 2,
+ "context_menu": [
+  {
+   "key": "callee_safe_system",
+   "kind": "on-target",
+   "label": "body of sym.imp.safe_system",
+   "deliver": "ctx/callee_0x1690.c"
+  },
+  {
+   "key": "var_origin_system_const",
+   "kind": "on-target",
+   "label": "the constant at *0x0000c180 = \"killall -1 asaeiiim >/dev/null\"",
+   "deliver": "*0xc180 = \"killall -1 asaeiiim >/dev/null\"  (constant string in .rodata @ 0x0000f7e4; fixed argument to the raw call, no formatting, no user input)"
+  },
+  {
+   "key": "callee_xml",
+   "kind": "off-target",
+   "label": "body of sym.imp.xml_set_str"
+  },
+  {
+   "key": "const_node_fmt",
+   "kind": "off-target",
+   "label": "the constant at *0x0000c184 = \"/network_mgr/portforwording/item:%d/enable\""
+  },
+  {
+   "key": "login_gate",
+   "kind": "on-target",
+   "label": "Body of sym.check_login (0xe2b4), the session-cookie check that cgiMain runs (if (check_login()==1)) before dispatching the requested command",
+   "deliver": "ctx/fn_0xe2b4_login_gate.c"
+  },
+  {
+   "key": "reshow",
+   "kind": "reshow",
+   "label": "show the current function body again",
+   "deliver": "<same body>"
+  }
+ ],
+ "reconcile_note": "Terminal is not-vulnerable. Two facts are each independently required. (1) The callee at 0x000092a8 (deliver ctx/callee_0x1690.c) is the entry point that carries the cgiFormString-derived values (uStack_28, auStack_18, var_20h). Its body, together with its shared core, builds a discrete argv[] array (one pointer per argument) and runs it via fork() + execvp(argv[0], argv). The library imports execvp and fork, not system or popen, and never builds a single command string or invokes a shell, so the user-controlled elements stay separate vector arguments and cannot inject shell syntax. The non-blocking entry on the else branch uses the same core with only the wait flag changed. (2) The constant at *0x0000c180 is the only argument to the one raw call in the function; it resolves to a fixed .rodata string with no format directive and no user data, so that call carries nothing attacker-controlled. With both facts the two exec paths that user data can reach are closed and the raw call is constant, which resolves the terminal to not-vulnerable. Dropping either fact leaves one path unproven and the verdict undecidable. Off-path items (the callee at 0x000091c4 and the constant at *0x0000c184 feed only the on-disk configuration write via sprintf) are not needed for the verdict. The upstream session check sym.check_login (0xe2b4) gates this handler, so the requested command runs only for a request that already holds a valid session."
+}

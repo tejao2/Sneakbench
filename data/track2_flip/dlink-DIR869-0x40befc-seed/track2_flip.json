@@ -1,0 +1,52 @@
+{
+  "gate": "dlink-DIR869-0x40befc-seed",
+  "source_rel": "dlink/DIR-869_REVA_1.02B15/htdocs/cgibin",
+  "source_va": "0x40befc",
+  "source_name": "sess_ispoweruser",
+  "menu": {
+    "start_note": "shared menu for original + mutants",
+    "min_rounds": 1,
+    "context_menu": [
+      {
+        "key": "callee_sess_validate",
+        "kind": "on-target",
+        "label": "Body of sym.sess_validate (the callee at 0x40bd78 whose return value this wrapper tests)",
+        "deliver": "ctx/fn_0x40bd78_session.c"
+      },
+      {
+        "key": "sibling_privatekey_gate",
+        "kind": "off-target",
+        "label": "Body of sym.sess_validate_privatekey (the callee at 0x40ba18)"
+      },
+      {
+        "key": "deeper_sentry_reader",
+        "kind": "off-target",
+        "label": "Body of sym.find_sentry (the callee at 0x40b0b8)"
+      },
+      {
+        "key": "consumer_caller",
+        "kind": "off-target",
+        "label": "Body of the caller sym.pigwidgeoncgi_main (0x40f120)"
+      },
+      {
+        "key": "reshow_start_body",
+        "kind": "reshow",
+        "label": "Show the current function body again",
+        "deliver": "<same body>"
+      }
+    ],
+    "reconcile_note": "sym.sess_ispoweruser is a two-line wrapper. It calls sym.sess_validate and returns the unsigned test uVar1 < 100. Blind, this is need-more-context, because the verdict depends entirely on what sess_validate returns for an unauthenticated or expired session. Delivering the body of sym.sess_validate (0x40bd78) resolves it: sess_validate reads the external sentry session store (through find_sentry and rw_sentry) and returns the stored session level on success, or 0xffffffff (-1) when the session is missing, invalid or expired. Because the wrapper compares as unsigned, 0xffffffff is not < 100, so the unauthenticated session is denied. Only a valid session with a low numeric level (0..99, meaning high privilege) is granted power-user. So the original enforces a real session-backed privilege check and resolves to not-vulnerable. This one artifact is both necessary and sufficient, so min_rounds = 1. The same body does not neutralize the mutant. The mutant keeps this exact wrapper but injects `if ((int32_t)uVar1 < 0) return true;` before the original return, which grants power-user on precisely the -1 sentinel path that sess_validate uses for the unauthenticated or expired session. Learning that sess_validate returns -1 for that case only makes the escalation clearer, so the mutant still resolves to vulnerable. The off-target items are real same-binary functions away from the verdict path: sym.sess_validate_privatekey (0x40ba18, the separate private-key check the caller also requires), sym.find_sentry (0x40b0b8, the deeper session-store reader called inside sess_validate), and the caller sym.pigwidgeoncgi_main (0x40f120). None of them is needed to decide this wrapper, so picking one ends the unit."
+  },
+  "original": {
+    "body": "slices/non-cves/synthetic/dlink-DIR869-0x40befc-seed/original_patched.c",
+    "expected": "not-vulnerable"
+  },
+  "mutants": [
+    {
+      "id": "dlink-DIR869-0x40befc-seed",
+      "body": "slices/non-cves/synthetic/dlink-DIR869-0x40befc-seed/mutated_vulnerable.c",
+      "mutation_name": "default-true-fallthrough (unauth->poweruser)",
+      "expected": "vulnerable"
+    }
+  ]
+}

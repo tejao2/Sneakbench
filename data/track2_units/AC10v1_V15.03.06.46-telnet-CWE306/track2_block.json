@@ -1,0 +1,39 @@
+{
+  "unit_id": "AC10v1_V15.03.06.46-telnet-CWE306",
+  "binary": "tenda/AC10v1_V15.03.06.46/bin/httpd",
+  "cwe": "CWE-306",
+  "terminal": "vulnerable",
+  "start_slice": "0x0045b860",
+  "min_rounds": 2,
+  "context_menu": [
+    {
+      "key": "auth_middleware",
+      "kind": "on-target",
+      "label": "body of sym.R7WebsSecurityHandler (0x00434c80), the URL security handler that runs before the /goform dispatcher",
+      "deliver": "ctx/auth_middleware.c"
+    },
+    {
+      "key": "route_registration",
+      "kind": "on-target",
+      "label": "the route registration for /goform/telnet: websFormDefine(\"telnet\", sym.TendaTelnet) plus the initWebs handler-chain install order",
+      "deliver": "ctx/route_registration.txt"
+    },
+    {
+      "key": "bait_fromAdvSetLanip",
+      "kind": "off-target",
+      "label": "body of sym.fromAdvSetLanip (0x00460a14), the /goform handler that sets lan.ip"
+    },
+    {
+      "key": "bait_fromSysToolChangePwd",
+      "kind": "off-target",
+      "label": "body of sym.fromSysToolChangePwd (0x00494510), the /goform handler that changes the admin web password"
+    },
+    {
+      "key": "reshow",
+      "kind": "reshow",
+      "label": "show the current function body again",
+      "deliver": "<same body>"
+    }
+  ],
+  "reconcile_note": "Terminal is vulnerable (CWE-306, unauthenticated telnet enable). The start body sym.TendaTelnet (0x0045b860) already shows that the handler enables telnetd unconditionally with no auth, token, or session check of its own; the only open question is whether /goform/telnet is reachable without authentication. Two facts resolve that, and each is independently required. (1) ctx/auth_middleware.c is sym.R7WebsSecurityHandler (0x00434c80): for url \"/goform/telnet\" (and \"/goform/ate\"), when g_Pass[0]==0 (config sys.userpass empty, the factory-default/no-password state) it does `move v0,zero; b 0x4364fc`, i.e. return 0 with NO websRedirect and NO websDone, byte-identical to the static-asset whitelist branch that provably serves unauthenticated assets, so the request is allowed through instead of being sent to the login redirect. (2) ctx/route_registration.txt shows /goform/telnet actually reaches the telnet-enable handler and that the skipped gate is on that path: websFormDefine(\"telnet\", sym.TendaTelnet) maps the form name, websFormHandler is bound to the \"/goform\" prefix, and initWebs installs R7WebsSecurityHandler FIRST (flag=1) before the /goform dispatcher, so the security handler runs on every request ahead of dispatch. Together: the request-path gate is skipped for this route in the default state, and the route with the skipped gate leads to sym.TendaTelnet, which runs `killall -9 telnetd; telnetd -b <lan.ip> &`. That is unauthenticated reach of a privileged operation, so the terminal is vulnerable. Dropping (1) leaves the auth decision unknown; dropping (2) leaves it unproven that the skipped gate is on the path to the telnet handler; so min_rounds = 2. The two off-target items are real gated /goform sibling handlers that are not on this path: sym.fromAdvSetLanip (0x00460a14) is the authenticated LAN-config form that sets lan.ip via SetValue (a tempting detour for anyone chasing the doSystemCmd(\"telnetd -b %s &\", lan.ip) argument as command injection, but lan.ip is a config value, not the /goform/telnet request input, so it is irrelevant to the missing-auth verdict), and sym.fromSysToolChangePwd (0x00494510) is the authenticated form that changes sys.userpass (tempting for anyone chasing how g_Pass is provisioned, but the unauth-reachability verdict holds in the g_Pass-empty default regardless of how the password is later set). Both require the normal cookie auth path and are not needed for the verdict; picking either ends the unit."
+}

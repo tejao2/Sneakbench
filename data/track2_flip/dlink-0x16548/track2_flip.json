@@ -1,0 +1,76 @@
+{
+  "gate": "dlink-0x16548",
+  "source_rel": "dlink/DIR-895L_REVA_1.02B07/htdocs/fileaccess.cgi",
+  "source_va": "0x16548",
+  "source_name": "00016548",
+  "menu": {
+    "start_note": "shared menu for original + mutants",
+    "min_rounds": 3,
+    "context_menu": [
+      {
+        "key": "decode",
+        "kind": "on-target",
+        "label": "Body of callee fcn.000164a8 (0x164a8), the token decoder called at var_24h = fcn.000164a8(var_ch + 5, arg2)",
+        "deliver": "ctx/fn_0x164a8_decode.c"
+      },
+      {
+        "key": "err_printer",
+        "kind": "off-target",
+        "label": "Body of fcn.00009f40 (0x9f40), the message printer called on the 'cant found key from cookie or UID' path"
+      },
+      {
+        "key": "digest",
+        "kind": "on-target",
+        "label": "Body of callee fcn.00026bd8 (0x26bd8), called just before the 16-byte memcmp",
+        "deliver": "ctx/fn_0x26bd8_digest.c"
+      },
+      {
+        "key": "other_gate",
+        "kind": "off-target",
+        "label": "Body of fcn.0002fa10 (0x2fa10), the other token-file compare routine in this cgi"
+      },
+      {
+        "key": "session_validator",
+        "kind": "on-target",
+        "label": "Body of the upstream session validator fcn.00030858 (0x30858) that the callers run before reaching this function",
+        "deliver": "ctx/fn_0x30858_upstream_session_validator.c"
+      },
+      {
+        "key": "hex_helper",
+        "kind": "off-target",
+        "label": "Body of fcn.00016370 (0x16370), the hex-decode helper called inside fcn.000164a8"
+      },
+      {
+        "key": "reshow",
+        "kind": "reshow",
+        "label": "Show the current function body again",
+        "deliver": "<same body>"
+      }
+    ],
+    "reconcile_note": "The original's only accept path is uVar1 = 0 when memcmp(auStack_40, auStack_50, 0x10) == 0. fcn.000164a8 shows the token must be exactly 0x40 chars, is hex-decoded, and returns negative on any other length, so a malformed token is denied (var_24h < 0 -> 0xffffffff) before any grant. fcn.00026bd8 shows the 16 bytes compared are a keyed HMAC digest (ipad 0x36 / opad 0x5c over a 0x40-byte block via init/update/final), so the compared value is a computed digest, not a constant that can be matched. fcn.00030858 shows the callers first look up the presented session token in the server session table (up to 128 records) and return -1 for any request with no live session, so an outsider never reaches this gate. Together these three prove the sole grant is a sound, session-gated HMAC check with deny-by-default on every failure path: the original is not-vulnerable. This menu carries no in-body grant, so it does not neutralize the mutant flaws. M1 returns 0 when strcmp(&src, \"dlink_backdoor_2015\") == 0 (a literal backdoor credential). M4 turns the token-decode-failure branch (var_24h < 0) into uVar1 = 0 (allow) instead of 0xffffffff. M7 drops the memcmp branch entirely and sets uVar1 = 0 unconditionally. Each mutant grants before or around the HMAC compare regardless of the decoder, the digest, or the session validator, so each stays vulnerable under this identical context."
+  },
+  "original": {
+    "body": "original_patched.c",
+    "expected": "not-vulnerable"
+  },
+  "mutants": [
+    {
+      "id": "dlink-0x16548-M1",
+      "body": "mutant_M1.c",
+      "mutation_name": "Hardcoded backdoor cred",
+      "expected": "vulnerable"
+    },
+    {
+      "id": "dlink-0x16548-M4",
+      "body": "mutant_M4.c",
+      "mutation_name": "Default-true fall-through",
+      "expected": "vulnerable"
+    },
+    {
+      "id": "dlink-0x16548-M7",
+      "body": "mutant_M7.c",
+      "mutation_name": "Gate-hoist / skipped check",
+      "expected": "vulnerable"
+    }
+  ]
+}

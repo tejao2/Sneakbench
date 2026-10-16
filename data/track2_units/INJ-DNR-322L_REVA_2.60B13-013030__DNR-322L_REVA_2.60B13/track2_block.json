@@ -1,0 +1,45 @@
+{
+ "unit_id": "INJ-DNR-322L_REVA_2.60B13-013030__DNR-322L_REVA_2.60B13",
+ "binary": "cgi/account_mgr.cgi",
+ "cwe": "CWE-78",
+ "terminal": "not-vulnerable",
+ "start_slice": "0x00013030",
+ "min_rounds": 2,
+ "context_menu": [
+  {
+   "key": "callee_safe_system",
+   "kind": "on-target",
+   "label": "body of sym.imp.safe_system",
+   "deliver": "ctx/callee_0x1690.c"
+  },
+  {
+   "key": "var_origin_system_const",
+   "kind": "on-target",
+   "label": "the constant at *0x00013788 = \"makedav start & > /dev/null\"",
+   "deliver": "*0x13788 = \"makedav start & > /dev/null\"  (constant string in .rodata @ 0x00023ec8; fixed argument to the raw system() call at the tail of cgi_group_modify, no format directive, no user input)"
+  },
+  {
+   "key": "callee_config",
+   "kind": "off-target",
+   "label": "body of sym.imp.LIB_CP_Config_To_MTD"
+  },
+  {
+   "key": "const_sprintf_fmt",
+   "kind": "off-target",
+   "label": "the constant at *0x00013754 = \"@%s\""
+  },
+  {
+   "key": "login_gate",
+   "kind": "on-target",
+   "label": "Body of sym.check_login (0x22054), the session-cookie check that cgiMain runs (if (check_login()==1)) before dispatching the requested command",
+   "deliver": "ctx/fn_0x22054_login_gate.c"
+  },
+  {
+   "key": "reshow",
+   "kind": "reshow",
+   "label": "show the current function body again",
+   "deliver": "<same body>"
+  }
+ ],
+ "reconcile_note": "Terminal is not-vulnerable. Two facts are each independently required. (1) cgi_group_modify reads user input with cgiFormString into auStack_64 (\"group\") and auStack_30a4 (\"member\"), and both flow only into the single call safe_system(0,0,*0x13760,*0x13764,*0x13758,auStack_64,*0x1375c,auStack_30a4,0). The callee body (deliver ctx/callee_0x1690.c, safe_system @ 0x1690 in lib/libsafe_system.so, PLT stub 0x0000a094) builds a discrete argv[] array (calloc'd, one pointer per argument) and hands it to safe_exec, which fork()s and calls execvp(argv[0], argv). The library imports execvp and fork, not system or popen, and never concatenates a command string or invokes a shell, so the user-controlled \"group\" and \"member\" values stay separate vector arguments and cannot inject shell syntax. (2) The only raw command sink is system(*0x13788) at the tail of the function; *0x13788 resolves to the fixed .rodata string \"makedav start & > /dev/null\" (@ 0x00023ec8), with no format directive and no cgi value spliced in, so that call carries nothing attacker-controlled. With both facts the one path user data can reach is discrete-argv exec and the one raw call is a constant, which resolves the terminal to not-vulnerable. Dropping either fact leaves one path unproven and the verdict undecidable. The off-path items are not needed for the verdict: LIB_CP_Config_To_MTD writes the running config to flash, and the sprintf format \"@%s\" (*0x13754) builds acStack_a4, which feeds only LIB_FTP_User_Group_Mod and acnt_mod_share, never a command sink. The upstream session check sym.check_login (0x22054) gates this handler, so the requested command runs only for a request that already holds a valid session."
+}

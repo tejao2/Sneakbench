@@ -1,0 +1,65 @@
+{
+    "gate": "dlink-0x417034",
+    "source_rel": "dlink/DIR-505L_REVA_1.01/usr/bin/lighttpd",
+    "source_va": "0x417034",
+    "source_name": null,
+    "delegated_gate": "hnap_auth_check (0x417034): HTTP Basic-Auth verification, called by http_request_parse (0x417200); its return drives the access decision.",
+    "menu": {
+        "start_note": "shared menu for original + mutants",
+        "min_rounds": 2,
+        "context_menu": [
+            {
+                "key": "decode_body",
+                "kind": "on-target",
+                "label": "Body of b64_decode (0x4164f0)",
+                "deliver": "ctx/fn_0x4164f0_decode.c"
+            },
+            {
+                "key": "compare_resolution",
+                "kind": "on-target",
+                "label": "Resolution of the gp-relative indirect calls in hnap_auth_check (0x417034) to their libc names, and the final compare",
+                "deliver": "ctx/fn_0x417034_compare.txt"
+            },
+            {
+                "key": "httpauth_kv_append",
+                "kind": "off-target",
+                "label": "Body of httpauth_keyvalue_buffer_append (0x41d6b8)"
+            },
+            {
+                "key": "config_read",
+                "kind": "off-target",
+                "label": "Body of config_read (0x41362c)"
+            },
+            {
+                "key": "config_check_cond",
+                "kind": "off-target",
+                "label": "Body of config_check_cond (0x428988)"
+            },
+            {
+                "key": "reshow",
+                "kind": "reshow",
+                "label": "Show the current function body again",
+                "deliver": "<same body>"
+            }
+        ],
+        "reconcile_note": "The two on-target items together resolve the original body from need-more-context to not-vulnerable. b64_decode (0x4164f0) shows the compared value is request-derived input: the Basic Authorization header decoded into a 'user:pass' string. The gp-relative resolution shows every indirect call on the path is plain libc (strncmp/strchr/strtok/strcpy/fopen64/fgets/fclose/strcmp), the stored password is read from /etc/lighttpd/lighttpd.user, and the terminal decision is return(strcmp(stored_pass, supplied_pass) == 0) with a default-false path and no system/popen/exec sink anywhere. So the original gate grants only on a correct password match: not-vulnerable. The same menu is shown to the mutants and does not neutralize their flaws, because each flaw lives in the mutant's own body: M4 changes the terminal 'return false' to 'return true', so the default / no-valid-Basic-header path grants access (auth bypass); M8 splices the decoded request username straight into a shell string via sprintf then a system() sink, before the compare (command injection). Both stay vulnerable under this identical context."
+    },
+    "original": {
+        "body": "slices/non-cves/synthetic/dlink-0x417034-M4/original_patched.c",
+        "expected": "not-vulnerable"
+    },
+    "mutants": [
+        {
+            "id": "dlink-0x417034-M8",
+            "body": "slices/non-cves/synthetic/dlink-0x417034-M8/mutated_vulnerable.c",
+            "mutation_name": "inject-ungated-sink",
+            "expected": "vulnerable"
+        },
+        {
+            "id": "dlink-0x417034-M4",
+            "body": "slices/non-cves/synthetic/dlink-0x417034-M4/mutated_vulnerable.c",
+            "mutation_name": "default-true-fallthrough",
+            "expected": "vulnerable"
+        }
+    ]
+}

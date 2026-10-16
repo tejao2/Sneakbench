@@ -1,0 +1,45 @@
+{
+ "unit_id": "INJ-DNR-322L_REVA_2.60B13-00c194__DNR-322L_REVA_2.60B13",
+ "binary": "cgi/network_mgr.cgi",
+ "cwe": "CWE-78",
+ "terminal": "not-vulnerable",
+ "start_slice": "0x0000c194",
+ "min_rounds": 2,
+ "context_menu": [
+  {
+   "key": "callee_safe_system",
+   "kind": "on-target",
+   "label": "body of sym.imp.safe_system_nonblock",
+   "deliver": "ctx/callee_safe_system_nonblock_chain.c"
+  },
+  {
+   "key": "var_origin_system_const",
+   "kind": "on-target",
+   "label": "the constant at *0x0000c408 = \"killall -1 asaeiiim >/dev/null\"",
+   "deliver": "*0x0000c408 = \"killall -1 asaeiiim >/dev/null\"  (constant string in .rodata)"
+  },
+  {
+   "key": "callee_xml",
+   "kind": "off-target",
+   "label": "body of sym.imp.xml_del"
+  },
+  {
+   "key": "var_origin_xml_fmt",
+   "kind": "off-target",
+   "label": "the constant at *0x0000c40c = \"/network_mgr/portforwording/item:%s\""
+  },
+  {
+   "key": "login_gate",
+   "kind": "on-target",
+   "label": "Body of sym.check_login (0xe2b4), the session-cookie check that cgiMain runs (if (check_login()==1)) before dispatching the requested command",
+   "deliver": "ctx/fn_0xe2b4_login_gate.c"
+  },
+  {
+   "key": "reshow",
+   "kind": "reshow",
+   "label": "show the current function body again",
+   "deliver": "<same body>"
+  }
+ ],
+ "reconcile_note": "Every cgiFormString value read by cig_portforwording_del (the auStack_236, auStack_20, var_28h, uStack_30 and acStack_234 buffers) reaches only the callee at 0x00008ffc, which is safe_system_nonblock. That callee packs its varargs into a discrete argv[] array and calls safe_exec, which fork()s and calls execvp(argv0, argv). There is no shell string on this path, so cgi metacharacters stay literal argv elements. The only raw system() call takes the fixed constant *0x0000c408 = \"killall -1 asaeiiim >/dev/null\", with no cgi value spliced in. The sprintf results (format string *0x0000c40c and its siblings) feed only xml_del / xml_set_str / xml_write_file config writes, never a command. No injectable command path exists, so the terminal is not-vulnerable. This verdict is auth-independent: the attacker input never reaches the shell, so it is not a command injection regardless of whether the path is authenticated. The upstream session check sym.check_login (0xe2b4) gates this handler, so the requested command runs only for a request that already holds a valid session."
+}

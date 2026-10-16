@@ -1,0 +1,36 @@
+{
+  "terminal": "not-vulnerable",
+  "start_slice": "0x17d34",
+  "min_rounds": 2,
+  "context_menu": [
+    {
+      "key": "cred_compare_callee",
+      "kind": "off-target",
+      "label": "body of function fcn.0000a31c"
+    },
+    {
+      "key": "caller_dispatcher",
+      "kind": "on-target",
+      "label": "body of the caller fcn.000182e4 (0x000182e4)",
+      "deliver": "ctx/fn_0x182e4_dispatcher.c"
+    },
+    {
+      "key": "struct_parser",
+      "kind": "off-target",
+      "label": "body of function fcn.0000cba0"
+    },
+    {
+      "key": "realm_config",
+      "kind": "on-target",
+      "label": "the constant at *0x0001f4b8 = \"Realm\"",
+      "deliver": "*0x0001f4b8 = \"Realm\" (mathopd config keyword, .rodata; parsed by fcn.0000cba0). Struct fields: auth_flag at +0x20, passwd/userfile at +0x24. Shipped generator etc/services/HTTP/httpcfg.php (rendered to /var/run/httpd.conf at boot): grep -rInE 'Realm|Password|User|Authorization|htpasswd' etc/services/HTTP* = 0 matches; every Control/Location block is emitted with no Realm, and no static *.conf ships a Realm either."
+    },
+    {
+      "key": "reshow_self",
+      "kind": "reshow",
+      "label": "show the current function body again",
+      "deliver": "<same body>"
+    }
+  ],
+  "reconcile_note": "The shown body looks fail-open: it returns 0 (authorized) when auth_flag(+0x20)==0 or passwd(+0x24)==0. Two items resolve it to not-vulnerable, and both are needed. (1) The caller at 0x182e4 invokes this function only when auth_flag!=0, so the auth_flag==0 default-authorize branch is dead through the real caller. (2) The 'Realm' keyword at *0x1f4b8 is the only directive that sets auth_flag/passwd non-zero, and the shipped generator etc/services/HTTP/httpcfg.php emits no Realm on any Location, so auth_flag==0 for every Location firmware-wide. Together: no Location ships auth_flag!=0 with passwd==0, and the function is never called in production; web access control is enforced by the CGI/session layer, not this Basic-auth path. Dropping (1) leaves a body that returns authorized for everything with no proof it is call-gated. Dropping (2) leaves an unproven auth_flag!=0 && passwd==0 Location as a possible bypass. So both on-target items are independently necessary. The callee at 0xa31c (credential compare) and the parser at 0xcba0 (builds the control struct) are real same-binary off-path functions not needed for the verdict."
+}

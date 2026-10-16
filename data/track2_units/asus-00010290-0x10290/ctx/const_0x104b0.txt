@@ -1,0 +1,7 @@
+// const source for the raw system() argument in fcn.00010290
+// In-body call:  rsym.system(*0x104b0)
+// *0x104b0 is a global pointer table slot.
+
+[0x104b0] -> 0x0004eb05 (rodata)
+psz @ 0x0004eb05:
+    cat /etc/key.pem /etc/cert.pem > /etc/server.pem

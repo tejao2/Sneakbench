@@ -1,0 +1,70 @@
+{
+  "gate": "dlink-0x4184d4",
+  "source_rel": "dlink/DCS-931L_REVA_1.03B8/bin/alphapd",
+  "source_va": "0x4184d4",
+  "source_name": null,
+  "menu": {
+    "start_note": "shared menu for original + mutants",
+    "min_rounds": 3,
+    "context_menu": [
+      {
+        "key": "caller_webscheckrealm",
+        "kind": "on-target",
+        "label": "body of the caller sym.websCheckRealm (0x411eb0): reads the stored password via nvram_bufget, writes it into arg1+0x9c just before calling this gate, and treats a return of 0 as authenticated (privilege set) and any nonzero return as HTTP 401",
+        "deliver": "ctx/fn_0x411eb0_caller.c"
+      },
+      {
+        "key": "digest_calc_ha1",
+        "kind": "on-target",
+        "label": "body of sym.DigestCalcHA1 (0x417d3c): builds HA1 = MD5(username:realm:password) over the request username, the realm, and the stored password field",
+        "deliver": "ctx/fn_0x417d3c_digest.c"
+      },
+      {
+        "key": "digest_calc_response",
+        "kind": "on-target",
+        "label": "body of sym.DigestCalcResponse (0x417fe8): builds the expected response digest = MD5(HA1:nonce:nc:cnonce:qop:HA2), the value the gate strcmp's against the client response field at arg1+0x110",
+        "deliver": "ctx/fn_0x417fe8_digest.c"
+      },
+      {
+        "key": "bait_strdupwithoutnull",
+        "kind": "off-target",
+        "label": "body of sym.strdupWithoutNull (0x414c88): duplicates the request and nvram strings that are passed in as the digest inputs"
+      },
+      {
+        "key": "bait_free",
+        "kind": "off-target",
+        "label": "body of sym.imp.free (0x44f420): frees the duplicated digest-input buffers after the compare"
+      },
+      {
+        "key": "bait_websgetvar",
+        "kind": "off-target",
+        "label": "body of sym.websGetVar (0x40f304): fetches the HTTP_REQUEST method string used as one of the digest inputs"
+      },
+      {
+        "key": "reshow_start_body",
+        "kind": "reshow",
+        "label": "Show the current function body again",
+        "deliver": "<same body>"
+      }
+    ],
+    "reconcile_note": "The gate is sym.websCheckDigestRealm (0x4184d4). On the body alone it is need-more-context: it computes an MD5 digest, strcmp's it against the client field arg1+0x110, sets uVar6=0 on a match and returns the deny default 0xffffffff otherwise. Two things are undecidable from the body: whether return 0 means grant or error, and whether the compared digest is keyed by a real server secret or by attacker input. The three on-target artifacts resolve both. (1) The sole caller sym.websCheckRealm (0x411eb0) fixes the return polarity: it loads the stored password via nvram_bufget, writes it into arg1+0x9c right before the call, then treats return 0 as authenticated and nonzero as HTTP 401. This proves 0=grant and that the digest is keyed by the server-held password, not by client input. (2) sym.DigestCalcHA1 (0x417d3c) shows HA1 = MD5(username:realm:password), binding the digest to that stored credential. (3) sym.DigestCalcResponse (0x417fe8) shows the expected response = MD5(HA1:nonce:...:HA2), so the value strcmp'd against arg1+0x110 is a genuine RFC-2617 digest the client cannot forge without the password. Together they prove the ORIGINAL grants (returns 0) only on a valid keyed-digest match, so it is not-vulnerable. Dropping any one leaves the verdict undecidable: without the caller the 0/-1 polarity and the password feed are unknown; without either digest function the compared value cannot be shown to be a server-keyed digest rather than attacker-controlled. All three are distinct functions and none re-shows the start body, so min_rounds = 3. The same menu does NOT neutralize the mutant flaws: M4 (default-true-fallthrough) sets uVar6=0 unconditionally before the compare, so it returns 0 (grant) no matter what the strcmp verdict is; M1 (hardcoded-backdoor-cred) returns 0 when the client sends username=='admin' and response=='5ecr3tD00r' before any MD5 is computed. Both grant without a valid keyed digest, so each mutant stays vulnerable under this exact context. Baits are real same-binary off-path helpers (string-dup, free, method-var fetch) that supply or clean up digest inputs but decide nothing; picking one ends the unit."
+  },
+  "original": {
+    "body": "slices/non-cves/synthetic/dlink-0x4184d4-M4/original_patched.c",
+    "expected": "not-vulnerable"
+  },
+  "mutants": [
+    {
+      "id": "dlink-0x4184d4-M4",
+      "body": "slices/non-cves/synthetic/dlink-0x4184d4-M4/mutated_vulnerable.c",
+      "mutation_name": "default-true-fallthrough",
+      "expected": "vulnerable"
+    },
+    {
+      "id": "dlink-0x4184d4-M1",
+      "body": "slices/non-cves/synthetic/dlink-0x4184d4-M1/mutated_vulnerable.c",
+      "mutation_name": "hardcoded-backdoor-cred",
+      "expected": "vulnerable"
+    }
+  ]
+}

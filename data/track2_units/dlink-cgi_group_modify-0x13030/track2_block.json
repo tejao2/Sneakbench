@@ -1,0 +1,45 @@
+{
+ "unit_id": "dlink-cgi_group_modify-0x13030",
+ "binary": "cgi/account_mgr.cgi",
+ "cwe": "CWE-78",
+ "terminal": "not-vulnerable",
+ "start_slice": "0x00013030",
+ "min_rounds": 2,
+ "context_menu": [
+  {
+   "key": "callee_safe_system",
+   "kind": "on-target",
+   "label": "body of sym.imp.safe_system",
+   "deliver": "ctx/callee_safe_system_chain.c"
+  },
+  {
+   "key": "const_0x13788",
+   "kind": "on-target",
+   "label": "the constant at *0x00013788 = \"makedav start & > /dev/null\"",
+   "deliver": "*0x00013788 = \"makedav start & > /dev/null\"  (constant string in .rodata)"
+  },
+  {
+   "key": "callee_offpath_ftp",
+   "kind": "off-target",
+   "label": "body of sym.imp.LIB_FTP_Create_Share_Link"
+  },
+  {
+   "key": "const_offpath",
+   "kind": "off-target",
+   "label": "the constant at *0x00013778 = \"true\""
+  },
+  {
+   "key": "login_gate",
+   "kind": "on-target",
+   "label": "Body of sym.check_login (0x22054), the session-cookie check that cgiMain runs (if (check_login()==1)) before dispatching the requested command",
+   "deliver": "ctx/fn_0x22054_login_gate.c"
+  },
+  {
+   "key": "reshow",
+   "kind": "reshow",
+   "label": "show the current function body again",
+   "deliver": "<same body>"
+  }
+ ],
+ "reconcile_note": "The attacker-controlled group (cgiFormString -> acStack_64) and member (cgiFormString -> auStack_30a4) flow only into the callee at 0x0000a094, which is safe_system(0,0,\"account\",\"-m\",\"-g\",group,\"-l\",member,0). That callee packs its varargs into a discrete argv[] array and calls safe_exec, which fork()s and calls execvp(argv0, argv). No system/popen/\"sh -c\" is on this path, so group and member stay literal argv elements and shell metacharacters never reach a shell. The single raw system() call takes the fixed constant *0x00013788 = \"makedav start & > /dev/null\", with no attacker input. Everything else the function calls (FTP share setup at 0x00009db8, quota, xml/config writes, service restart) is off the command path. No user input reaches a shell, so the terminal is not-vulnerable. This verdict is auth-independent: the attacker input never reaches the shell, so it is not a command injection regardless of whether the path is authenticated. The upstream session check sym.check_login (0x22054) gates this handler, so the requested command runs only for a request that already holds a valid session."
+}

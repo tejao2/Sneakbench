@@ -1,0 +1,45 @@
+{
+ "unit_id": "INJ-DNR-322L_REVA_2.60B13-00b93c__DNR-322L_REVA_2.60B13",
+ "binary": "cgi/network_mgr.cgi",
+ "cwe": "CWE-78",
+ "terminal": "not-vulnerable",
+ "start_slice": "0x0000b93c",
+ "min_rounds": 2,
+ "context_menu": [
+  {
+   "key": "callee_safe_system",
+   "kind": "on-target",
+   "label": "body of sym.imp.safe_system",
+   "deliver": "ctx/callee_0x000092a8.c"
+  },
+  {
+   "key": "var_origin_system_const",
+   "kind": "on-target",
+   "label": "the constant at *0x0000bdd4 = \"killall -1 asaeiiim >/dev/null\"",
+   "deliver": "*0x0000bdd4 = \"killall -1 asaeiiim >/dev/null\"  (constant string in .rodata)"
+  },
+  {
+   "key": "callee_xml",
+   "kind": "off-target",
+   "label": "body of sym.imp.xml_write_file"
+  },
+  {
+   "key": "var_origin_xml_fmt",
+   "kind": "off-target",
+   "label": "the constant at *0x0000bdf0 = \"/network_mgr/portforwording/item:%d/enable\""
+  },
+  {
+   "key": "login_gate",
+   "kind": "on-target",
+   "label": "Body of sym.check_login (0xe2b4), the session-cookie check that cgiMain runs (if (check_login()==1)) before dispatching the requested command",
+   "deliver": "ctx/fn_0xe2b4_login_gate.c"
+  },
+  {
+   "key": "reshow",
+   "kind": "reshow",
+   "label": "show the current function body again",
+   "deliver": "<same body>"
+  }
+ ],
+ "reconcile_note": "cig_portforwording_add reads four cgi values with cgiFormString (uStack_1c, var_24h, uStack_2c and acStack_2e). Every one of them flows only into the two safe_system calls at *0xbdac. The callee at 0x000092a8 is safe_system, whose body (delivered) packs its varargs into a discrete argv[] array and calls safe_exec, which fork()s and runs execvp(argv0, argv). There is no shell string on this path, so cgi metacharacters stay literal argv elements and cannot inject a command. The only raw system() call takes the fixed constant *0x0000bdd4 = \"killall -1 asaeiiim >/dev/null\", with no cgi value spliced in. The sprintf results and the xml path constants (for example *0x0000bdf0) feed only xml_set_str / xml_write_file config writes at 0x000092b4, never a command sink. Delivering both on-target items is needed and sufficient: the safe_system body proves the user-data path uses discrete-argv exec, and the constant proves the raw system() argument carries no user data. Dropping either leaves the verdict undecidable. Terminal is not-vulnerable. The upstream session check sym.check_login (0xe2b4) gates this handler, so the requested command runs only for a request that already holds a valid session."
+}

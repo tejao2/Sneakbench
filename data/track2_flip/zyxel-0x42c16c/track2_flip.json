@@ -1,0 +1,64 @@
+{
+  "gate": "zyxel-0x42c16c",
+  "source_rel": "zyxel/LTE3301-M209_V1.00-ABLG4/usr/sbin/httpd",
+  "source_va": "0x42c16c",
+  "source_name": null,
+  "menu": {
+    "start_note": "shared menu for original + mutants",
+    "min_rounds": 2,
+    "context_menu": [
+      {
+        "key": "cs_submitted",
+        "kind": "on-target",
+        "label": "Body of the callee fcn.0042c058 (0x42c058), whose result is iVar1",
+        "deliver": "ctx/fn_0x42c058_decode.c"
+      },
+      {
+        "key": "cs_stored",
+        "kind": "on-target",
+        "label": "Body of the callee fcn.0042bfc8 (0x42bfc8), whose result is iVar2",
+        "deliver": "ctx/fn_0x42bfc8_helper.c"
+      },
+      {
+        "key": "bait_free",
+        "kind": "off-target",
+        "label": "Definition of the callee pointer at *0x447f5c (sym.imp.free)"
+      },
+      {
+        "key": "bait_caller",
+        "kind": "off-target",
+        "label": "Body of the caller fcn.0042c9f8, which calls this function at 0x42d120"
+      },
+      {
+        "key": "bait_system",
+        "kind": "off-target",
+        "label": "Body of sym.imp.system"
+      },
+      {
+        "key": "reshow",
+        "kind": "reshow",
+        "label": "Show the current function body again",
+        "deliver": "<same body>"
+      }
+    ],
+    "reconcile_note": "The two on-target getters identify the operands of the strcmp gate. fcn.0042c058 walks the request parameter list for name 'csrftok' and returns strdup(value), so iVar1 (the left operand) is attacker request input. fcn.0042bfc8 returns strdup(*(ctx+0x115c)+0x41), the per-session token held by the server, and returns 0 when no session token exists, so iVar2 (the right operand) is the server-held expected token. In the ORIGINAL body the grant (return 1) is reached only when both operands are non-null and strcmp(submitted, stored)==0 via (**0x447f6c); every null-operand or mismatch path returns 0 (default deny). No literal secret sits on the path and the grant needs an exact match to the server session token, so the original gate is sound: not-vulnerable. This same menu does not neutralize the mutant flaws, because each flaw lives inside the mutant body, not in the getters. M1 (hardcoded-backdoor-cred) adds an extra branch that compares the submitted value iVar1 against the literal 'zyUx3l_svc' and returns 1 on match, before the real token check, so any attacker who sends that literal is authorized. M4 (default-true-fallthrough) changes the terminal deny from return 0 to return 1, so the null-operand and mismatch paths now grant. Reading fn_0x42c058_decode.c and fn_0x42bfc8_helper.c does not touch either injected flaw, so each mutant still resolves to vulnerable under the same context."
+  },
+  "original": {
+    "body": "slices/non-cves/synthetic/zyxel-0x42c16c-M1/original_patched.c",
+    "expected": "not-vulnerable"
+  },
+  "mutants": [
+    {
+      "id": "zyxel-0x42c16c-M1",
+      "body": "slices/non-cves/synthetic/zyxel-0x42c16c-M1/mutated_vulnerable.c",
+      "mutation_name": "hardcoded-backdoor-cred",
+      "expected": "vulnerable"
+    },
+    {
+      "id": "zyxel-0x42c16c-M4",
+      "body": "slices/non-cves/synthetic/zyxel-0x42c16c-M4/mutated_vulnerable.c",
+      "mutation_name": "default-true-fallthrough",
+      "expected": "vulnerable"
+    }
+  ]
+}

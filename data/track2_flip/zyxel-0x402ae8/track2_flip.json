@@ -1,0 +1,58 @@
+{
+    "gate": "zyxel-0x402ae8",
+    "source_rel": "zyxel/LTE3301-M209_V1.00-ABLG4/usr/sbin/httpd",
+    "source_va": "0x402ae8",
+    "source_name": null,
+    "menu": {
+        "start_note": "shared menu for original + mutants",
+        "min_rounds": 2,
+        "context_menu": [
+            {
+                "key": "cs_read",
+                "kind": "on-target",
+                "label": "Definition of the callee reached through the pointer at *0x447f64 (sym.imp.read_csman), which fills iStack_34 and auStack_30",
+                "deliver": "ctx/fn_0x447f64_read_csman.txt"
+            },
+            {
+                "key": "cs_compare",
+                "kind": "on-target",
+                "label": "Definition of the callee reached through the pointer at *0x4480c0 (sym.imp.strcasecmp), whose result is iVar1",
+                "deliver": "ctx/fn_0x4480c0_strcasecmp.txt"
+            },
+            {
+                "key": "bait_caller",
+                "kind": "off-target",
+                "label": "Body of the caller sym.do_login (0x402da4), which calls this function at 0x402da4"
+            },
+            {
+                "key": "bait_sibling",
+                "kind": "off-target",
+                "label": "Body of fcn.0042c16c, a separate auth check in this binary"
+            },
+            {
+                "key": "bait_system",
+                "kind": "off-target",
+                "label": "Body of sym.imp.system (0x433340)"
+            },
+            {
+                "key": "reshow",
+                "kind": "reshow",
+                "label": "Show the current function body again",
+                "deliver": "<same body>"
+            }
+        ],
+        "reconcile_note": "The two on-target items resolve the indirect calls that decide the verdict. The item for *0x447f64 shows it is sym.imp.read_csman: it fills auStack_30 with the STORED security answer read from config-store id 0x80010400 (a server-provisioned value, not request input) and reads the enable flag from id 0x201500. The item for *0x4480c0 shows it is sym.imp.strcasecmp: the grant (return 0) is reached only when the submitted user_ans equals that stored answer, and every mismatch or missing-param path returns 0xffffffff (deny). The caller sym.do_login treats return 0 as success. So in the ORIGINAL body the only way to be authorized is to submit the answer that matches the provisioned stored answer; there is no literal secret and no request-controllable expected value on the path, so the gate is sound: not-vulnerable. Both items are independently necessary: without the read_csman item the buffer auStack_30 is filled by an unresolved indirect call and could hold a literal or attacker value, and without the strcasecmp item the compare that guards the grant is unresolved; dropping either leaves the verdict undecidable. This same menu does not neutralize the mutant flaw, because the flaw lives inside the mutant body, not in these callees. zyxel-0x402ae8-M1 (hardcoded-backdoor-cred) injects an extra branch right after the user_ans param is found: if (**0x447f6c)(submitted value, \"__zyxsvc__\") == 0 then return 0, before the genuine strcasecmp. The literal \"__zyxsvc__\" and the grant both sit in the mutant body. Knowing that *0x447f64 is read_csman and *0x4480c0 is strcasecmp does not touch that injected literal branch, so any attacker who submits user_ans=__zyxsvc__ is authorized regardless of the stored answer, and the mutant still resolves to vulnerable under the same context."
+    },
+    "original": {
+        "body": "slices/non-cves/synthetic/zyxel-0x402ae8-M1/original_patched.c",
+        "expected": "not-vulnerable"
+    },
+    "mutants": [
+        {
+            "id": "zyxel-0x402ae8-M1",
+            "body": "slices/non-cves/synthetic/zyxel-0x402ae8-M1/mutated_vulnerable.c",
+            "mutation_name": "hardcoded-backdoor-cred",
+            "expected": "vulnerable"
+        }
+    ]
+}

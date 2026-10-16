@@ -1,0 +1,18 @@
+{
+  "id": "dlink-DIR869-0x40bd78-seed",
+  "synthetic": true,
+  "seeded": true,
+  "source_vendor": "dlink",
+  "source_rel": "dlink/DIR-869_REVA_1.02B15/htdocs/cgibin",
+  "source_va": "0x40bd78",
+  "source_name": "sess_validate",
+  "mutation": "The deny branch taken on a session-store miss, malformed entry, or expired session (find_sentry==0 || iStack_17c<0 || uVar1<now) returns a valid privilege level 0 instead of 0xffffffff (-1), so an absent or expired session is treated as an authenticated top-level user.",
+  "mutation_name": "default-true-fallthrough",
+  "flaw_line": "uVar3 = 0;   /* was 0xffffffff */",
+  "why": "sess_validate is the session gate. Its return is emitted by phpcgi_main as AUTHORIZED_GROUP=%d and tested by sess_ispoweruser (<100). The correct gate fails closed (returns -1) when the session is missing or expired. Forcing that path to a valid level (0) grants unauthenticated/expired callers a valid, top-privilege session identity.",
+  "mechanism": "session",
+  "track": "B",
+  "blind_verdict": "vulnerable",
+  "patched_original_blind": "need-more-context",
+  "in_benchmark": true
+}

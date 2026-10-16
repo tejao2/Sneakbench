@@ -1,0 +1,35 @@
+{
+  "terminal": "not-vulnerable",
+  "start_slice": "0xcaa8",
+  "min_rounds": 1,
+  "context_menu": [
+    {
+      "key": "callee_Set_Current_Date_Time",
+      "kind": "on-target",
+      "label": "body of sym.imp.Set_Current_Date_Time",
+      "deliver": "ctx/callee_Set_Current_Date_Time.c"
+    },
+    {
+      "key": "off_set_profile",
+      "kind": "off-target",
+      "label": "body of sym.imp.Set_Private_Profile_String"
+    },
+    {
+      "key": "off_cgi_find",
+      "kind": "off-target",
+      "label": "body of sym.imp.CGI_Find_Parameter"
+    },
+    {
+      "key": "off_caller_main",
+      "kind": "off-target",
+      "label": "body of the caller main (0x0000e8ac)"
+    },
+    {
+      "key": "reshow",
+      "kind": "reshow",
+      "label": "show the current function body again",
+      "deliver": "<same body>"
+    }
+  ],
+  "reconcile_note": "The start body already shows both in-body command sinks are popen on the fixed literal '/sbin/hwclock -r', with clienttime (*(iVar2+4)) going only to (a) strncpy field-slices that build a date string written via Set_Private_Profile_String (config write, not a command) and (b) the callee Set_Current_Date_Time. So the only fact not decidable from the start body is the behaviour of that callee. Delivering ctx/callee_Set_Current_Date_Time.c shows clienttime is consumed field-by-field, each field atoi-coerced to an int for settimeofday, and that the callee's only two system() calls use fixed rodata constants ('/sbin/hwclock --systohc' and '/etc/init.d/crond.sh restart ...'). No clienttime byte reaches any command, which resolves the terminal to not-vulnerable. The in-body popen constant is proven by the start body itself and is not marked on-target (it would only re-show start-body content and would inflate request_precision)."
+}
