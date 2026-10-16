@@ -1,18 +1,3 @@
-/* safe_system is imported by cgi/network_mgr.cgi (PLT stub at 0x000092a8).
- * Its implementation lives in the shared object lib/libsafe_system.so
- * (safe_system at 0x00001690, safe_exec at 0x000011e0). Both bodies below are
- * decompiled from that shared object: the wrapper packs its varargs into a
- * discrete argv[] array and hands (argv0, argv) to safe_exec, which fork()s and
- * calls execvp(argv0, argv). There is no system/popen/"sh -c" on this path, so
- * caller-supplied strings stay literal argv elements and are never re-parsed by
- * a shell. safe_system passes 1 as the last safe_exec argument (it waits for the
- * child); safe_system_nonblock is the same wrapper with 0 there. */
-
-/* ---- safe_system: builds argv[] from varargs, calls safe_exec ---- */
-
-//WARNING: Variable defined which should be unmapped: var_28h
-//WARNING: Restarted to delay deadcode elimination for space: stack
-
 uint sym.safe_system(int32_t arg1,int32_t arg2,int32_t arg_4h,int32_t arg_8h)
 
 {
@@ -60,8 +45,6 @@ code_r0x00001780:
     }
     return uVar3;
 }
-
-/* ---- safe_exec: fork() + execvp(argv0, argv); no shell interpreter ---- */
 
 uint32_t sym.safe_exec(int32_t arg1,int32_t arg2,int32_t arg_4h)
 

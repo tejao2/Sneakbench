@@ -1,33 +1,3 @@
-/*
- * Callee body for the wrapper reached from sym.cgi_get_log_item (0x0000f104).
- * Caller binary  : rootfs/dlink/DNR-322L_REVA_2.60B13/cgi/system_mgr.cgi
- *                  (imports imp.safe_system, PLT/reloc 0x00001954 / stub 0x00009954)
- * Source library : rootfs/dlink/DNR-322L_REVA_2.60B13/lib/libsafe_system.so
- * Entry point    : safe_system @ 0x1690 (blocking; this is the one called here)
- *                  safe_system_nonblock @ 0x158c is the same wrapper with the
- *                  wait flag set to 0
- * Shared core    : safe_exec @ 0x11e0
- * Library imports: execvp @ 0x944, fork @ 0xa04  (no system/popen import)
- *
- * cgi_get_log_item calls:
- *   safe_system(*0xf460, 0, *0xf464, *0xf468, auStack_840, *0xf45c, 0)
- * where *0xf460="/tmp/user.log", *0xf464="tail", *0xf468="-n",
- * auStack_840 = the cgiFormString field read at 0x0000f104 (the only cgi input),
- * *0xf45c="/tmp/merge_user.log". The wrapper packs these varargs into a discrete
- * argv[] array (calloc'd, one pointer per argument) and hands (argv[0], argv) to
- * safe_exec, which fork()s and calls execvp(argv[0], argv). Arguments are passed
- * as separate vector elements to execvp; they are never concatenated into a single
- * string and never handed to a shell (no "/bin/sh -c"). So the cgi value stays a
- * literal argv element (the count for "tail -n") and cannot inject shell syntax.
- * The last flag to safe_exec is 1 = wait for the child (blocking safe_system).
- * Decompiled with: r2 -q -c 's <va>; af; pdg' <binary>
- */
-
-/* ---- safe_system @ 0x1690 (blocking): builds argv[] from varargs, calls safe_exec ---- */
-
-//WARNING: Variable defined which should be unmapped: var_28h
-//WARNING: Restarted to delay deadcode elimination for space: stack
-
 uint sym.safe_system(int32_t arg1,int32_t arg2,int32_t arg_4h,int32_t arg_8h)
 
 {
@@ -69,14 +39,13 @@ uint sym.safe_system(int32_t arg1,int32_t arg2,int32_t arg_4h,int32_t arg_8h)
                 }
             }
         }
-        uVar3 = rsym.safe_exec(*puVar1,puVar1,arg1,arg2,1);   /* blocking: flag = 1 */
+        uVar3 = rsym.safe_exec(*puVar1,puVar1,arg1,arg2,1);
 code_r0x00001780:
         rsym.free(puVar1);
     }
     return uVar3;
 }
 
-/* ---- safe_exec @ 0x11e0 (shared core: fork + execvp on the argv vector) ---- */
 uint32_t sym.safe_exec(int32_t arg1,int32_t arg2,int32_t arg_4h)
 
 {
@@ -138,7 +107,7 @@ uint32_t sym.safe_exec(int32_t arg1,int32_t arg2,int32_t arg_4h)
         rsym.sigaddset(&stack0xfffffc94,0x11);
         iVar1 = rsym.sigprocmask(0,&stack0xfffffc94,&sym.safe_exec::var_3ech);
         if (iVar1 != -1) {
-            iVar1 = rsym.fork();                              /* child process */
+            iVar1 = rsym.fork();
             if (iVar1 == -1) {
                 rsym.sigaction(2,&stack0xffffff44,0);
                 rsym.sigaction(3,&stack0xfffffeb8,0);
@@ -172,7 +141,7 @@ uint32_t sym.safe_exec(int32_t arg1,int32_t arg2,int32_t arg_4h)
                     rsym.close(iVar1);
                 }
                 rsym.putenv(iVar3 + *0x1588);
-                rsym.execvp(arg1,arg2);                       /* discrete argv, no shell */
+                rsym.execvp(arg1,arg2);
                 rsym._exit(0x7f);
             }
             if (in_stack_00000000 == 0) {

@@ -1,6 +1,3 @@
-
-//WARNING: Variable defined which should be unmapped: s1
-
 uint fcn.00016548(int32_t arg1)
 
 {
@@ -30,7 +27,7 @@ uint fcn.00016548(int32_t arg1)
     int32_t var_10h;
     int32_t var_ch;
     void *s1;
-    
+
     var_18h = 0;
     var_1ch = sym.imp.strlen(arg1);
     sym.imp.memset(acStack_450,0,0x400);
@@ -91,4 +88,3 @@ uint fcn.00016548(int32_t arg1)
     }
     return uVar1;
 }
-

@@ -1,15 +1,3 @@
-/* safe_system is imported by cgi/account_mgr.cgi (PLT stub at 0x0000a094).
- * Its implementation is the shared DNR-322L_REVA_2.60B13 cgi helper. Both bodies
- * below are decompiled from that helper: the wrapper packs its varargs into a
- * discrete argv[] array and hands (argv0, argv) to safe_exec, which fork()s and
- * calls execvp(argv0, argv). No system/popen/"sh -c" is on this path, so a
- * vararg value stays a single literal argv element. */
-
-/* ---- safe_system: builds argv[] from varargs, calls safe_exec ---- */
-
-//WARNING: Variable defined which should be unmapped: var_28h
-//WARNING: Restarted to delay deadcode elimination for space: stack
-
 uint sym.safe_system(int32_t arg1,int32_t arg2,int32_t arg_4h,int32_t arg_8h)
 
 {
@@ -57,8 +45,6 @@ code_r0x00001780:
     }
     return uVar3;
 }
-
-/* ---- safe_exec: fork() + execvp(argv0, argv); no shell interpreter ---- */
 
 uint32_t sym.safe_exec(int32_t arg1,int32_t arg2,int32_t arg_4h)
 

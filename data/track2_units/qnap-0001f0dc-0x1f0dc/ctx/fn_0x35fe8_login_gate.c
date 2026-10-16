@@ -1,4 +1,3 @@
-
 uint main(int argc,char **argv,char **envp)
 
 {
@@ -17,7 +16,7 @@ uint main(int argc,char **argv,char **envp)
     uint uStack_15b4;
     int iStack_1584;
     int iStack_156c;
-    
+
     iVar1 = sym.imp.CGI_Get_Input(argc);
     iVar2 = sym.imp.CGI_Find_Parameter(iVar1,0x44cd0);
     uVar3 = 0;

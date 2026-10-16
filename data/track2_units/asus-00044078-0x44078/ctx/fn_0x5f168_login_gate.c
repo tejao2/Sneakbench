@@ -1,4 +1,3 @@
-
 int fcn.0005f168(int32_t arg1)
 
 {
@@ -12,7 +11,7 @@ int fcn.0005f168(int32_t arg1)
     int iVar7;
     uint *in_stack_00000000;
     uchar auStack_3c [36];
-    
+
     rsym.memset(auStack_3c,0,0x21);
     rsym.memset(auStack_3c,0,0x21);
     iVar2 = func_0x0005ee88(*0x5f3b8);
@@ -89,4 +88,3 @@ int fcn.0005f168(int32_t arg1)
     }
     return iVar2;
 }
-

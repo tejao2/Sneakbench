@@ -1,6 +1,3 @@
-
-//WARNING: Unknown calling convention -- yet parameter storage is locked
-
 uint sym.httpRpmPass(int32_t arg1)
 
 {
@@ -14,11 +11,11 @@ uint sym.httpRpmPass(int32_t arg1)
     uchar auStack_40 [4];
     uchar auStack_3c [12];
     code *pcStack_2c;
-    
+
     puVar6 = auStack_40;
     arg1_00 = (**0x497420)(arg1,0);
     uVar1 = (**0x496968)(arg1);
-    //str.Basic_realm__s_
+
     iVar2 = (**0x4973a0)(str.Basic_realm__s_);
     iVar3 = (**0x4973a0)(*0x497a40);
     iVar2 = (**0x496984)(uVar1,iVar2 + iVar3 + 1);
@@ -26,12 +23,12 @@ uint sym.httpRpmPass(int32_t arg1)
         (**0x496f7c)(arg1,1,str.Basic_realm__s_);
     }
     else {
-    //str.Basic_realm__s_
+
         (**0x496cd0)(iVar2,str.Basic_realm__s_,*0x497a40);
         (**0x496f7c)(arg1,1,iVar2);
         (**0x496fa0)(uVar1,iVar2);
     }
-    //str.Basic
+
     iVar2 = (**0x497424)(arg1_00,str.Basic,6);
     if (iVar2 == 0) {
         arg1_00 = arg1_00 + 6;
@@ -43,7 +40,7 @@ uint sym.httpRpmPass(int32_t arg1)
         iVar3 = sym.httpPwdDecode(iVar2,arg1_00);
         puVar6 = auStack_3c;
         if (iVar3 == 0) {
-    //str.REMOTE_USER
+
             (**(pcStack_2c + -0x71a4))(arg1,str.REMOTE_USER,iVar2);
         }
         (**(pcStack_2c + -0x78b0))(uVar1,iVar2);
@@ -66,4 +63,3 @@ code_r0x00446f4c:
     (**(iVar3 + -0x7ad8))(*0x497a44);
     return 0;
 }
-

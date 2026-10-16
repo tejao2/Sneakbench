@@ -1,23 +1,3 @@
-/* dlink DIR-868L_REVB_2.05B02 /sbin/httpd  (ARM, stripped)
- * fcn.000182e4  VA 0x182e4  -- request dispatcher (mathopd-derived)
- * Decompiler: r2ghidra (pdg), relocs applied.
- *
- * Flow:
- *   fcn.00017c00  -> virtual-host lookup (find_vs); -1 => 400
- *   fcn.00017f74  -> faketoreal: matches the request path to a Location/Control
- *                     config entry, stored at *(arg1 + 0x9c4); NULL => 404 (0x194)
- *   fcn.00016ebc  -> check_path; -1 => 404
- *   AUTH GATE (line below): Basic-auth check fcn.00017d34 is called ONLY when
- *      *(*(arg1 + 0x9c4) + 0x20) != 0, i.e. only when the matched entry's
- *      auth_flag is set by a "Realm" directive. On failure => 401 (0x191).
- *
- * So a Location with auth_flag==0 simply skips the Basic-auth gate here; the
- * default-authorize branches inside fcn.00017d34 are unreachable via this caller
- * unless auth_flag!=0. See config_dependency_note.md.
- */
-
-//WARNING: Variable defined which should be unmapped: var_8h
-
 int fcn.000182e4(int32_t arg1)
 
 {

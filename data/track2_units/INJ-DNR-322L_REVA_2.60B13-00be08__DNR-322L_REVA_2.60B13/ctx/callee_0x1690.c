@@ -1,22 +1,3 @@
-/*
- * Callee body for the wrapper reached from cig_portforwording_modify.
- * Source library : rootfs/dlink/DNR-322L_REVA_2.60B13/lib/libsafe_system.so
- * Entry points   : safe_system @ 0x1690, safe_system_nonblock @ 0x158c
- * Shared core    : safe_exec @ 0x11e0
- * Library imports: execvp @ 0x944, fork @ 0xa04  (no system/popen import)
- *
- * Both entry points build a discrete argv[] array (calloc'd, one pointer per
- * argument) from their variadic argument list, then hand that argv to
- * safe_exec, which fork()s and calls execvp(argv[0], argv). Arguments are
- * passed as separate vector elements to execvp; they are never concatenated
- * into a single string and never handed to a shell (no "/bin/sh -c").
- * The only difference between the two entry points is the last flag passed to
- * safe_exec: 1 = wait for the child (safe_system), 0 = return after fork
- * (safe_system_nonblock).
- * Decompiled with: r2 -q -c 's <va>; af; pdg'
- */
-
-/* ---- safe_system @ 0x1690 (blocking) ---- */
 uint sym.safe_system(int32_t arg1,int32_t arg2,int32_t arg_4h,int32_t arg_8h)
 
 {
@@ -58,14 +39,13 @@ uint sym.safe_system(int32_t arg1,int32_t arg2,int32_t arg_4h,int32_t arg_8h)
                 }
             }
         }
-        uVar3 = rsym.safe_exec(*puVar1,puVar1,arg1,arg2,1);   /* blocking: flag = 1 */
+        uVar3 = rsym.safe_exec(*puVar1,puVar1,arg1,arg2,1);
 code_r0x00001780:
         rsym.free(puVar1);
     }
     return uVar3;
 }
 
-/* ---- safe_system_nonblock @ 0x158c (non-blocking) ---- */
 uint sym.safe_system_nonblock(int32_t arg1,int32_t arg2,int32_t arg_4h,int32_t arg_8h)
 
 {
@@ -107,14 +87,13 @@ uint sym.safe_system_nonblock(int32_t arg1,int32_t arg2,int32_t arg_4h,int32_t a
                 }
             }
         }
-        uVar3 = rsym.safe_exec(*puVar1,puVar1,arg1,arg2,0);   /* non-blocking: flag = 0 */
+        uVar3 = rsym.safe_exec(*puVar1,puVar1,arg1,arg2,0);
 code_r0x0000167c:
         rsym.free(puVar1);
     }
     return uVar3;
 }
 
-/* ---- safe_exec @ 0x11e0 (shared core: fork + execvp on the argv vector) ---- */
 uint32_t sym.safe_exec(int32_t arg1,int32_t arg2,int32_t arg_4h)
 
 {
@@ -176,7 +155,7 @@ uint32_t sym.safe_exec(int32_t arg1,int32_t arg2,int32_t arg_4h)
         rsym.sigaddset(&stack0xfffffc94,0x11);
         iVar1 = rsym.sigprocmask(0,&stack0xfffffc94,&sym.safe_exec::var_3ech);
         if (iVar1 != -1) {
-            iVar1 = rsym.fork();                              /* child process */
+            iVar1 = rsym.fork();
             if (iVar1 == -1) {
                 rsym.sigaction(2,&stack0xffffff44,0);
                 rsym.sigaction(3,&stack0xffffffb8,0);
@@ -210,7 +189,7 @@ uint32_t sym.safe_exec(int32_t arg1,int32_t arg2,int32_t arg_4h)
                     rsym.close(iVar1);
                 }
                 rsym.putenv(iVar3 + *0x1588);
-                rsym.execvp(arg1,arg2);                       /* discrete argv, no shell */
+                rsym.execvp(arg1,arg2);
                 rsym._exit(0x7f);
             }
             if (in_stack_00000000 == 0) {

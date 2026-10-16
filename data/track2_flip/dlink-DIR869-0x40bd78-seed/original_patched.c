@@ -1,14 +1,3 @@
-/* SYNTHETIC SEED - not-vulnerable pole (correct gate)
- * source: dlink/DIR-869_REVA_1.02B15/htdocs/cgibin  (MIPS, dynsym-named)
- * source_va: 0x40bd78  symbol: sess_validate
- * mechanism: session
- * Clean r2ghidra (pdg) output, verbatim. Returns the stored session user
- * privilege level, or 0xffffffff (-1) on absent / missing / expired session.
- * Fails CLOSED: every deny path returns 0xffffffff.
- */
-
-//WARNING: Unknown calling convention -- yet parameter storage is locked
-
 uint sym.sess_validate(int32_t arg1,size_t n)
 
 {
